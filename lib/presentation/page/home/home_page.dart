@@ -23,9 +23,6 @@ class _HomePageState extends State<HomePage> {
   @override
   void initState() {
     super.initState();
-    getIt<AddFoodInteractor>().execute(Food(id: '1', name: 'Abc 1'));
-    getIt<AddFoodInteractor>().execute(Food(id: '2', name: 'Abc 1'));
-    getIt<AddFoodInteractor>().execute(Food(id: '3', name: 'Abc 1'));
   }
 
   @override

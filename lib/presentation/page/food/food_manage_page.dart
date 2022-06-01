@@ -1,5 +1,9 @@
+import 'package:de1_mobile_friends/main.dart';
+import 'package:de1_mobile_friends/presentation/page/food/food_manage_cubit.dart';
+import 'package:de1_mobile_friends/presentation/page/food/food_manage_state.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/widgets.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 
 class FoodManagePage extends StatefulWidget {
   const FoodManagePage({Key? key}) : super(key: key);
@@ -9,10 +13,162 @@ class FoodManagePage extends StatefulWidget {
 }
 
 class _FoodManagePageState extends State<FoodManagePage> {
+  final FoodManageCubit _cubit = getIt<FoodManageCubit>();
+
+  TextEditingController? _createTextEdtCtrl;
+
+  @override
+  void initState() {
+    _createTextEdtCtrl = TextEditingController();
+    super.initState();
+  }
+
+  @override
+  void dispose() {
+    _createTextEdtCtrl?.dispose();
+    super.dispose();
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: ,
+      body: BlocProvider<FoodManageCubit>(
+        create: (context) => _cubit..initialize(),
+        child: Row(
+          children: [
+            Expanded(child: _foodList()),
+            Expanded(child: _addFood()),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget _foodList() {
+    return BlocConsumer<FoodManageCubit, FoodManageState>(
+      listener: (context, state) {
+        if (state is FoodManageErrorState && state.foods?.isNotEmpty != true) {
+          ScaffoldMessenger.of(context)
+              .showSnackBar(SnackBar(content: Text("Error ${state.e}")));
+        }
+      },
+      builder: (context, state) {
+        if (state is FoodManageInitialState) {
+          return Center(
+            child: CupertinoActivityIndicator(),
+          );
+        }
+
+        if (state.foods?.isNotEmpty == true) {
+          final list = state.foods!;
+          return ListView.builder(
+            itemBuilder: (context, i) {
+              final double topMargin = i == 0 ? 18 : 4;
+              return Container(
+                margin: EdgeInsets.only(
+                  top: topMargin,
+                  left: 32,
+                  right: 32,
+                  bottom: 4,
+                ),
+                decoration: BoxDecoration(
+                    color: Colors.white,
+                    border: Border.all(
+                      color: Colors.grey,
+                      style: BorderStyle.solid,
+                      width: 1.0,
+                    )),
+                padding: const EdgeInsets.all(16),
+                child: Row(
+                  children: [
+                    Expanded(child: Text(list[i].name)),
+                    IconButton(
+                        onPressed: () {
+                          _cubit.deleteFood(list[i].id);
+                        },
+                        icon: Icon(
+                          Icons.delete,
+                          size: 24,
+                          color: Colors.grey,
+                        ))
+                  ],
+                ),
+              );
+            },
+            itemCount: list.length,
+          );
+        }
+
+        if (state.foods?.isEmpty == true) {
+          return Center(
+            child: Text("No food yet"),
+          );
+        }
+
+        return Center(
+          child: Text("Something went wrong"),
+        );
+      },
+    );
+  }
+
+  Widget _addFood() {
+    return Align(
+      alignment: Alignment.topCenter,
+      child: Container(
+        padding: const EdgeInsets.symmetric(vertical: 16, horizontal: 32),
+        margin: const EdgeInsets.all(16),
+        decoration: BoxDecoration(
+          border: Border.all(
+            color: Colors.grey,
+            style: BorderStyle.solid,
+            width: 1.0,
+          ),
+          color: Colors.white,
+          borderRadius: BorderRadius.circular(16),
+          boxShadow: [
+            BoxShadow(
+              color: Colors.grey,
+              offset: Offset(0.0, 1.0), //(x,y)
+              blurRadius: 1.0,
+            ),
+          ],
+        ),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Text("Create new food"),
+            const SizedBox(height: 16),
+            Container(
+              width: double.infinity,
+              child: TextField(
+                controller: _createTextEdtCtrl,
+                decoration: InputDecoration(hintText: "Food name"),
+              ),
+            ),
+            const SizedBox(height: 16),
+            Container(
+              width: double.infinity,
+              child: TextButton(
+                style: ButtonStyle(
+                  padding: MaterialStateProperty.all(
+                      const EdgeInsets.symmetric(horizontal: 32, vertical: 16)),
+                  backgroundColor: MaterialStateProperty.all(Colors.blue[500]),
+                ),
+                onPressed: () {
+                  _cubit.addFood(_createTextEdtCtrl?.text);
+                  _createTextEdtCtrl?.text = '';
+                },
+                child: Text(
+                  "Create",
+                  style: TextStyle(color: Colors.white),
+                ),
+              ),
+            ),
+          ],
+        ),
+      ),
     );
   }
 }
