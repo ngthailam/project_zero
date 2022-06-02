@@ -16,16 +16,19 @@ class _FoodManagePageState extends State<FoodManagePage> {
   final FoodManageCubit _cubit = getIt<FoodManageCubit>();
 
   TextEditingController? _createTextEdtCtrl;
+  FocusNode? _createTextFocusNode;
 
   @override
   void initState() {
     _createTextEdtCtrl = TextEditingController();
+    _createTextFocusNode = FocusNode();
     super.initState();
   }
 
   @override
   void dispose() {
     _createTextEdtCtrl?.dispose();
+    _createTextFocusNode?.dispose();
     super.dispose();
   }
 
@@ -143,6 +146,12 @@ class _FoodManagePageState extends State<FoodManagePage> {
             Container(
               width: double.infinity,
               child: TextField(
+                focusNode: _createTextFocusNode,
+                onSubmitted: (text) {
+                  _cubit.addFood(text);
+                  _createTextEdtCtrl?.text = '';
+                  _createTextFocusNode?.requestFocus();
+                },
                 controller: _createTextEdtCtrl,
                 decoration: InputDecoration(hintText: "Food name"),
               ),

@@ -122,6 +122,12 @@
       "languageVersion": "2.12"
     },
     {
+      "name": "confetti",
+      "rootUri": "file:///Users/lam/Code/flutter/.pub-cache/hosted/pub.dartlang.org/confetti-0.6.0",
+      "packageUri": "lib/",
+      "languageVersion": "2.12"
+    },
+    {
       "name": "convert",
       "rootUri": "file:///Users/lam/Code/flutter/.pub-cache/hosted/pub.dartlang.org/convert-3.0.2",
       "packageUri": "lib/",
@@ -530,7 +536,7 @@
       "languageVersion": "2.16"
     }
   ],
-  "generated": "2022-06-01T16:00:14.824195Z",
+  "generated": "2022-06-02T14:47:21.141016Z",
   "generator": "pub",
   "generatorVersion": "2.16.1"
 }

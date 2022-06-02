@@ -26,6 +26,7 @@ class FoodManageCubit extends Cubit<FoodManageState> {
   }
 
   void addFood(String? foodName) async {
+    print("State");
     if (foodName?.isNotEmpty != true) {
       return;
     }
@@ -33,7 +34,7 @@ class FoodManageCubit extends Cubit<FoodManageState> {
     if (result.isSuccess()) {
       // Do nothing, already observe results
     } else {
-      emit(FoodManageErrorState(result.exception!));
+      // emit(FoodManageErrorState(result.exception!));
     }
   }
 
@@ -42,7 +43,7 @@ class FoodManageCubit extends Cubit<FoodManageState> {
     if (result.isSuccess()) {
       // Do nothing, already observe results
     } else {
-      emit(FoodManageErrorState(result.exception!));
+      // emit(FoodManageErrorState(result.exception!));
     }
   }
 }

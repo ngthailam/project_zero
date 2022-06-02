@@ -13,8 +13,9 @@ import 'domain/interactor/food/delete_food_interactor.dart' as _i8;
 import 'domain/interactor/food/get_all_food_interactor.dart' as _i5;
 import 'domain/interactor/food/observe_all_food_interactor.dart' as _i6;
 import 'domain/repo/food_repo.dart' as _i3;
-import 'presentation/page/food/food_manage_cubit.dart'
-    as _i9; // ignore_for_file: unnecessary_lambdas
+import 'presentation/page/food/food_manage_cubit.dart' as _i9;
+import 'presentation/page/home/home_cubit.dart'
+    as _i10; // ignore_for_file: unnecessary_lambdas
 
 // ignore_for_file: lines_longer_than_80_chars
 /// initializes the registration of provided dependencies inside of [GetIt]
@@ -34,5 +35,7 @@ _i1.GetIt $initGetIt(_i1.GetIt get,
       get<_i6.ObserveAllFoodInteractor>(),
       get<_i7.AddFoodInteractor>(),
       get<_i8.DeleteFoodInteractor>()));
+  gh.factory<_i10.HomeCubit>(
+      () => _i10.HomeCubit(get<_i6.ObserveAllFoodInteractor>()));
   return get;
 }

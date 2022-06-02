@@ -44,9 +44,11 @@ class MyApp extends StatelessWidget {
       theme: ThemeData(
         primarySwatch: Colors.blue,
       ),
-      onGenerateRoute: (RouteSettings settings) =>
-          AppRouter.generateRoute(settings),
-      home: FoodManagePage(),
+      initialRoute: AppRouter.home,
+      routes: {
+        AppRouter.home: (context) => HomePage(),
+        AppRouter.foodManage: (context) => FoodManagePage(),
+      },
     );
   }
 }
