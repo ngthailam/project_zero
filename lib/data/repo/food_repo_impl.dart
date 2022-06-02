@@ -1,4 +1,3 @@
-import 'package:de1_mobile_friends/domain/model/either.dart';
 import 'package:de1_mobile_friends/domain/model/food.dart';
 import 'package:de1_mobile_friends/domain/repo/food_repo.dart';
 import 'package:de1_mobile_friends/uuid_generator.dart';
