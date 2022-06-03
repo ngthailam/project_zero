@@ -15,7 +15,6 @@ class AppRouter {
         return MaterialPageRoute(
             builder: (context) => const FoodManagePage(), settings: settings);
       default:
-        // TODO: add 404 page
         return Container();
     }
   }
