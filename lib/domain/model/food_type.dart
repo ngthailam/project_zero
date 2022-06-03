@@ -4,15 +4,18 @@ part 'food_type.g.dart';
 
 @JsonSerializable()
 class FoodType {
-  final String id;
-  final String name;
+  final bool cold;
+  final bool hot;
+  final bool water;
 
   FoodType({
-    required this.id,
-    required this.name,
+    this.cold = false,
+    this.hot = false,
+    this.water = false,
   });
 
-  factory FoodType.fromJson(Map<String, dynamic> json) => _$FoodTypeFromJson(json);
+  factory FoodType.fromJson(Map<String, dynamic> json) =>
+      _$FoodTypeFromJson(json);
 
   /// Connect the generated [_$PersonToJson] function to the `toJson` method.
   Map<String, dynamic> toJson() => _$FoodTypeToJson(this);

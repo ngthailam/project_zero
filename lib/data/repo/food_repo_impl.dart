@@ -1,4 +1,5 @@
 import 'package:de1_mobile_friends/domain/model/food.dart';
+import 'package:de1_mobile_friends/domain/model/food_type.dart';
 import 'package:de1_mobile_friends/domain/repo/food_repo.dart';
 import 'package:de1_mobile_friends/uuid_generator.dart';
 import 'package:firebase_database/firebase_database.dart';
@@ -31,8 +32,12 @@ class FoodRepoImpl extends FoodRepo {
   }
 
   @override
-  Future<bool> addFood(String foodName) async {
-    final food = Food(id: generateRandomUuid(), name: foodName);
+  Future<bool> addFood(String foodName, {FoodType? type}) async {
+    final food = Food(
+      id: generateRandomUuid(),
+      name: foodName,
+      type: type ?? FoodType(),
+    );
     FirebaseDatabase firebase = FirebaseDatabase.instance;
     DatabaseReference ref = firebase.ref("food/${food.id}");
     await ref.set(food.toJson());

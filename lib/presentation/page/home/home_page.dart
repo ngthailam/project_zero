@@ -78,7 +78,6 @@ class _HomePageState extends State<HomePage> {
   Widget _result() {
     return BlocConsumer<HomeCubit, HomeState>(listener: (context, state) {
       if (state.pickedFood != null) {
-        // TODO: will produce anim multiple time, need fix
         _confettiController?.play();
       }
     }, builder: (context, state) {
@@ -132,13 +131,17 @@ class _HomePageState extends State<HomePage> {
   Widget _foodWheel() {
     return BlocConsumer<HomeCubit, HomeState>(
       listener: (context, state) {
-        // TODO: Do something, remove if not needed
+        // Do something, remove if not needed
       },
       builder: (context, state) {
         final foods = state.foods;
 
         if (foods?.isNotEmpty != true) {
           return Text("Something went wrong");
+        }
+
+        if (foods!.length == 1) {
+          return Text("Only 1 option: ${foods[0].name}");
         }
 
         return Column(
@@ -165,9 +168,8 @@ class _HomePageState extends State<HomePage> {
                 onAnimationEnd: () {
                   _cubit!.onSpinAnimEnd();
                 },
-                items: foods!
-                    .map((e) => FortuneItem(child: Text(e.name)))
-                    .toList(),
+                items:
+                    foods.map((e) => FortuneItem(child: Text(e.name))).toList(),
               ),
             ),
             const SizedBox(height: 16),

@@ -1,6 +1,7 @@
 import 'package:de1_mobile_friends/main.dart';
 import 'package:de1_mobile_friends/presentation/page/food/food_manage_cubit.dart';
 import 'package:de1_mobile_friends/presentation/page/food/food_manage_state.dart';
+import 'package:de1_mobile_friends/presentation/page/food/widgets/food_type_picker.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -13,13 +14,14 @@ class FoodManagePage extends StatefulWidget {
 }
 
 class _FoodManagePageState extends State<FoodManagePage> {
-  final FoodManageCubit _cubit = getIt<FoodManageCubit>();
+  FoodManageCubit? _cubit;
 
   TextEditingController? _createTextEdtCtrl;
   FocusNode? _createTextFocusNode;
 
   @override
   void initState() {
+    _cubit = getIt<FoodManageCubit>();
     _createTextEdtCtrl = TextEditingController();
     _createTextFocusNode = FocusNode();
     super.initState();
@@ -27,6 +29,7 @@ class _FoodManagePageState extends State<FoodManagePage> {
 
   @override
   void dispose() {
+    _cubit?.disposeManual();
     _createTextEdtCtrl?.dispose();
     _createTextFocusNode?.dispose();
     super.dispose();
@@ -36,7 +39,7 @@ class _FoodManagePageState extends State<FoodManagePage> {
   Widget build(BuildContext context) {
     return Scaffold(
       body: BlocProvider<FoodManageCubit>(
-        create: (context) => _cubit..initialize(),
+        create: (context) => _cubit!..initialize(),
         child: Row(
           children: [
             Expanded(child: _foodList()),
@@ -87,7 +90,7 @@ class _FoodManagePageState extends State<FoodManagePage> {
                     Expanded(child: Text(list[i].name)),
                     IconButton(
                         onPressed: () {
-                          _cubit.deleteFood(list[i].id);
+                          _cubit?.deleteFood(list[i].id);
                         },
                         icon: Icon(
                           Icons.delete,
@@ -139,44 +142,62 @@ class _FoodManagePageState extends State<FoodManagePage> {
         ),
         child: Column(
           mainAxisSize: MainAxisSize.min,
-          mainAxisAlignment: MainAxisAlignment.center,
+          crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Text("Create new food"),
             const SizedBox(height: 16),
-            Container(
-              width: double.infinity,
-              child: TextField(
-                focusNode: _createTextFocusNode,
-                onSubmitted: (text) {
-                  _cubit.addFood(text);
-                  _createTextEdtCtrl?.text = '';
-                  _createTextFocusNode?.requestFocus();
-                },
-                controller: _createTextEdtCtrl,
-                decoration: InputDecoration(hintText: "Food name"),
-              ),
-            ),
+            _nameInput(),
             const SizedBox(height: 16),
-            Container(
-              width: double.infinity,
-              child: TextButton(
-                style: ButtonStyle(
-                  padding: MaterialStateProperty.all(
-                      const EdgeInsets.symmetric(horizontal: 32, vertical: 16)),
-                  backgroundColor: MaterialStateProperty.all(Colors.blue[500]),
-                ),
-                onPressed: () {
-                  _cubit.addFood(_createTextEdtCtrl?.text);
-                  _createTextEdtCtrl?.text = '';
-                },
-                child: Text(
-                  "Create",
-                  style: TextStyle(color: Colors.white),
-                ),
-              ),
-            ),
+            Text("Choose food type"),
+            const SizedBox(height: 8),
+            _foodTypes(),
+            const SizedBox(height: 16),
+            _confirmBtn(),
           ],
         ),
+      ),
+    );
+  }
+
+  Widget _foodTypes() {
+    return FoodTypePicker(
+      onChangedType: (type) => _cubit?.onChangedType(type),
+    );
+  }
+
+  Widget _confirmBtn() {
+    return Container(
+      width: double.infinity,
+      child: TextButton(
+        style: ButtonStyle(
+          padding: MaterialStateProperty.all(
+              const EdgeInsets.symmetric(horizontal: 32, vertical: 16)),
+          backgroundColor: MaterialStateProperty.all(Colors.blue[500]),
+        ),
+        onPressed: () {
+          _cubit?.addFood(_createTextEdtCtrl?.text);
+          _createTextEdtCtrl?.text = '';
+        },
+        child: Text(
+          "Create",
+          style: TextStyle(color: Colors.white),
+        ),
+      ),
+    );
+  }
+
+  Widget _nameInput() {
+    return Container(
+      width: double.infinity,
+      child: TextField(
+        focusNode: _createTextFocusNode,
+        onSubmitted: (text) {
+          _cubit?.addFood(text);
+          _createTextEdtCtrl?.text = '';
+          _createTextFocusNode?.requestFocus();
+        },
+        controller: _createTextEdtCtrl,
+        decoration: InputDecoration(hintText: "Food name"),
       ),
     );
   }
