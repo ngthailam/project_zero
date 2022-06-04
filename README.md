@@ -30,8 +30,9 @@ After you pull the project, run the below command
 ### 2. Start working
 - Assign yourself to the issue
 - Create a branch from `main`
-- Branch must be in format `{doc/feature/bug}/{issue_number}/{short_description}`
+- Branch must be in format `{doc/feature/bug/tech/enhance}/{issue_number}/{short_description}`
 Ex: `doc/9/update_readme_and_license`
+- If branch does not follow format, CI will fail
 
 
 ### 3. Create a pull request
