@@ -68,3 +68,8 @@ node_modules/
 
 .dart_tool/flutter_build/
 
+.flutter-plugins
+.flutter-plugins-dependencies
+.packages
+.dart_tool/package_config_subset
+.dart_tool/package_config.json
