@@ -1,13 +1,17 @@
 import 'package:chat_bubbles/bubbles/bubble_special_one.dart';
 import 'package:de1_mobile_friends/domain/interactor/config/get_all_config_interactor.dart';
 import 'package:de1_mobile_friends/domain/model/config.dart';
+import 'package:de1_mobile_friends/domain/model/food_type.dart';
 import 'package:de1_mobile_friends/main.dart';
 import 'package:de1_mobile_friends/presentation/widget/tu_ai_msg_widget.dart';
 import 'package:de1_mobile_friends/tuAI/tu_ai.dart';
 import 'package:flutter/material.dart';
 
 class TuAiWidget extends StatefulWidget {
-  const TuAiWidget({Key? key}) : super(key: key);
+  const TuAiWidget({Key? key, required this.onRequestFilterByFoodType})
+      : super(key: key);
+
+  final Function(FoodType type) onRequestFilterByFoodType;
 
   @override
   State<TuAiWidget> createState() => _TuAiWidgetState();
@@ -53,8 +57,8 @@ class _TuAiWidgetState extends State<TuAiWidget> {
   @override
   Widget build(BuildContext context) {
     return Container(
-        height: 300,
-        width: 300,
+        height: 500,
+        width: 500,
         child: Column(
           children: [
             _tuAiMsg(3),
@@ -90,8 +94,16 @@ class _TuAiWidgetState extends State<TuAiWidget> {
             child: TuAiMessageWidget(
               tuAiOutput: msg.tuAiOutput!,
               onYesNoRespond: (bool ans) {
-                ScaffoldMessenger.of(context)
-                    .showSnackBar(SnackBar(content: Text('Not supported yet')));
+                final userInput = ans ? "Yes" : "No";
+
+                setState(() {
+                  _messages.add(
+                    Messages(isSender: true, myMsg: userInput),
+                  );
+                  _isWaitingTuAi = true;
+                });
+
+                _triggerTuAiRespondsUserInput(userInput);
               },
             ),
           )
@@ -121,33 +133,49 @@ class _TuAiWidgetState extends State<TuAiWidget> {
             color: _isWaitingTuAi ? Colors.grey : Colors.blue,
           ),
           onPressed: () {
-            if (_textEdtTrl?.text.isNotEmpty != true) {
-              return;
-            }
-            final userMsg = _textEdtTrl?.text ?? '';
-            setState(() {
-              _messages.add(
-                Messages(isSender: true, myMsg: userMsg),
-              );
-              _textEdtTrl?.text = '';
-              _isWaitingTuAi = true;
-              _triggerTuAi(userMsg);
-            });
+            _onSendMsg();
           },
         ),
       ),
       controller: _textEdtTrl,
+      onSubmitted: (text) {
+        _onSendMsg();
+      },
     );
   }
 
-  void _triggerTuAi(String userMsg) {
+  void _onSendMsg() {
+    if (_textEdtTrl?.text.isNotEmpty != true) {
+      return;
+    }
+    final userMsg = _textEdtTrl?.text ?? '';
+    setState(() {
+      _messages.add(
+        Messages(isSender: true, myMsg: userMsg),
+      );
+      _textEdtTrl?.text = '';
+      _isWaitingTuAi = true;
+      _triggerTuAiRespondsUserInput(userMsg);
+    });
+  }
+
+  void _triggerTuAiRespondsUserInput(userInput) {
     Future.delayed(Duration(seconds: 1), () {
       setState(() {
-        final suggest = _tuAi.suggestFoodType(TuAiInput());
+        final output = _tuAi.respondsUserInput(
+          TuAiUserInput(
+            userInput,
+          ),
+        );
         _messages.add(
-          Messages(isSender: false, tuAiOutput: suggest),
+          Messages(isSender: false, tuAiOutput: output),
         );
         _isWaitingTuAi = false;
+
+        if (output.mode == TuAiOutputMode.filter_food &&
+            output.foodType != null) {
+          widget.onRequestFilterByFoodType(output.foodType!);
+        }
       });
     });
   }

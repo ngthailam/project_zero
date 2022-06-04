@@ -16,11 +16,13 @@ class TuAiMessageWidget extends StatelessWidget {
   Widget build(BuildContext context) {
     switch (tuAiOutput.mode) {
       case TuAiOutputMode.plain_text:
+      case TuAiOutputMode.filter_food:
         return _basicMsg(tuAiOutput.text);
       case TuAiOutputMode.suggest_type_yes_no:
         return _yesNoMsg();
       default:
-        return const SizedBox.shrink();
+        throw Exception(
+            "[TuAiMessageWidget] Not supported ${tuAiOutput.mode.name}");
     }
   }
 
