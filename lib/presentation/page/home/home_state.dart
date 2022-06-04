@@ -21,4 +21,15 @@ class HomePrimaryState extends HomeState {
     Food? pickedFood,
     TuAiOutput? tuAiOutput,
   }) : super(foods: foods, pickedFood: pickedFood, tuAiOutput: tuAiOutput);
+
+  HomePrimaryState copyWith({
+    List<Food>? foods,
+    Food? pickedFood,
+    TuAiOutput? tuAiOutput,
+  }) =>
+      HomePrimaryState(
+        foods: foods ?? this.foods,
+        pickedFood: pickedFood ?? this.pickedFood,
+        tuAiOutput: tuAiOutput ?? this.tuAiOutput,
+      );
 }

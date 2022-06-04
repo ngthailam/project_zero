@@ -192,7 +192,10 @@ class _FoodManagePageState extends State<FoodManagePage> {
       child: TextField(
         focusNode: _createTextFocusNode,
         onSubmitted: (text) {
-          _cubit?.addFood(text);
+          if (_createTextEdtCtrl?.text.isNotEmpty != true) {
+            return;
+          }
+          _cubit?.addFood(text.trim());
           _createTextEdtCtrl?.text = '';
           _createTextFocusNode?.requestFocus();
         },
