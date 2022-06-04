@@ -32,7 +32,7 @@ abstract class TuAi {
 class TuAiImpl extends TuAi {
   @override
   TuAiOutput suggestFoodType(TuAiInput input) {
-    var text = "Have a nice day";
+    var text = "English, mf! Do you speak it?!";
     var suggestedFoodType = FoodType.allTrue();
     var mode = TuAiOutputMode.plain_text;
 

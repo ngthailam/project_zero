@@ -73,15 +73,31 @@ class _TuAiWidgetState extends State<TuAiWidget> {
       return SizedBox.shrink();
     }
     final msg = _messages[_messages.length - position];
-    return msg.isSender
-        ? _myMsg(msg.myMsg)
-        : TuAiMessageWidget(
-            tuAiOutput: msg.tuAiOutput!,
-            onYesNoRespond: (bool ans) {
-              ScaffoldMessenger.of(context)
-                  .showSnackBar(SnackBar(content: Text('Not supported yet')));
-            },
-          );
+    if (msg.isSender) {
+      return _myMsg(msg.myMsg);
+    } else {
+      return Row(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Align(
+            alignment: Alignment.topCenter,
+            child: CircleAvatar(
+              radius: 20,
+              backgroundImage: AssetImage('assets/img/tu_face_neutral.png'),
+            ),
+          ),
+          Expanded(
+            child: TuAiMessageWidget(
+              tuAiOutput: msg.tuAiOutput!,
+              onYesNoRespond: (bool ans) {
+                ScaffoldMessenger.of(context)
+                    .showSnackBar(SnackBar(content: Text('Not supported yet')));
+              },
+            ),
+          )
+        ],
+      );
+    }
   }
 
   Widget _myMsg(String? msg) {
@@ -105,6 +121,9 @@ class _TuAiWidgetState extends State<TuAiWidget> {
             color: _isWaitingTuAi ? Colors.grey : Colors.blue,
           ),
           onPressed: () {
+            if (_textEdtTrl?.text.isNotEmpty != true) {
+              return;
+            }
             final userMsg = _textEdtTrl?.text ?? '';
             setState(() {
               _messages.add(

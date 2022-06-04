@@ -57,19 +57,12 @@ class _HomePageState extends State<HomePage> {
               create: (context) => _cubit!..initialize(),
               child: Row(
                 children: [
-                  Expanded(child: _foodWheel()),
+                  Expanded(child: _left()),
                   const SizedBox(width: 32),
                   Expanded(child: _rightSide()),
                 ],
               ),
             ),
-            const SizedBox(height: 32),
-            TextButton(
-              onPressed: () {
-                Navigator.of(context).pushNamed(AppRouter.foodManage);
-              },
-              child: Text("Edit foods"),
-            )
           ],
         ),
       ),
@@ -82,6 +75,11 @@ class _HomePageState extends State<HomePage> {
       children: [
         _result(),
         const SizedBox(height: 92),
+        Text(
+          "Chat with AI:",
+          style: TextStyle(fontSize: 28),
+        ),
+        const SizedBox(height: 32),
         TuAiWidget(),
       ],
     );
@@ -99,11 +97,14 @@ class _HomePageState extends State<HomePage> {
           mainAxisSize: MainAxisSize.min,
           crossAxisAlignment: CrossAxisAlignment.center,
           children: [
-            Text("You have spinned:"),
+            Text(
+              "You have spinned:",
+              style: TextStyle(fontSize: 32),
+            ),
             const SizedBox(height: 24),
             Text(
               state.pickedFood!.name.toUpperCase(),
-              style: TextStyle(fontWeight: FontWeight.bold),
+              style: TextStyle(fontWeight: FontWeight.bold, fontSize: 48),
             ),
             ConfettiWidget(
               confettiController: _confettiController!,
@@ -140,11 +141,48 @@ class _HomePageState extends State<HomePage> {
     });
   }
 
-  Widget _foodWheel() {
-    return BlocConsumer<HomeCubit, HomeState>(
-      listener: (context, state) {
-        // Do something, remove if not needed
-      },
+  Widget _left() {
+    return Column(
+      mainAxisSize: MainAxisSize.min,
+      children: [
+        _wheel(),
+        const SizedBox(height: 32),
+        TextButton(
+          onPressed: () {
+            Navigator.of(context).pushNamed(AppRouter.foodManage);
+          },
+          child: Text("Edit foods"),
+        ),
+        const SizedBox(height: 32),
+        SizedBox(
+          width: 150,
+          height: 80,
+          child: TextButton(
+            style: ButtonStyle(
+              overlayColor:
+                  MaterialStateProperty.all(Color.fromARGB(255, 167, 215, 254)),
+              backgroundColor:
+                  MaterialStateProperty.all(Color.fromARGB(255, 232, 232, 232)),
+            ),
+            onPressed: () {
+              _cubit!.onSpin();
+            },
+            child: Text(
+              "Spin",
+              style: TextStyle(fontSize: 32),
+            ),
+          ),
+        ),
+        const SizedBox(height: 16),
+        Text("Wheel filter"),
+        const SizedBox(height: 16),
+        _filters(),
+      ],
+    );
+  }
+
+  Widget _wheel() {
+    return BlocBuilder<HomeCubit, HomeState>(
       builder: (context, state) {
         final foods = state.foods;
 
@@ -156,44 +194,53 @@ class _HomePageState extends State<HomePage> {
           return Text("Only 1 option: ${foods[0].name}");
         }
 
-        return Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            SizedBox(
-              height: 400,
-              width: 400,
-              child: FortuneWheel(
-                key: Key('Food wheel'),
-                selected: _cubit!.wheelController.stream,
-                duration: Duration(seconds: 5),
+        return SizedBox(
+          height: 400,
+          width: 400,
+          child: FortuneWheel(
+            key: Key('Food wheel'),
+            selected: _cubit!.wheelController.stream,
+            duration: Duration(seconds: 5),
+            alignment: Alignment.centerRight,
+            indicators: const [
+              FortuneIndicator(
                 alignment: Alignment.centerRight,
-                indicators: const [
-                  FortuneIndicator(
-                    alignment: Alignment.centerRight,
-                    child: TriangleIndicator(
-                      color: Colors.red,
-                    ),
-                  ),
-                ],
-                animateFirst: false,
-                physics: NoPanPhysics(),
-                onAnimationEnd: () {
-                  _cubit!.onSpinAnimEnd();
-                },
-                items:
-                    foods.map((e) => FortuneItem(child: Text(e.name))).toList(),
+                child: TriangleIndicator(
+                  color: Colors.red,
+                ),
               ),
-            ),
-            const SizedBox(height: 16),
-            TextButton(
-              onPressed: () {
-                _cubit!.onSpin();
-              },
-              child: Text("Spin"),
-            ),
-          ],
+            ],
+            animateFirst: false,
+            physics: NoPanPhysics(),
+            onAnimationEnd: () {
+              _cubit!.onSpinAnimEnd();
+            },
+            items: foods.map((e) => FortuneItem(child: Text(e.name))).toList(),
+          ),
         );
       },
+    );
+  }
+
+  Widget _filters() {
+    return BlocBuilder<HomeCubit, HomeState>(
+      builder: (context, state) => Wrap(
+        spacing: 6,
+        runSpacing: 6,
+        children: _cubit!.currentFilterMap.keys.map((e) {
+          final isSelected = _cubit!.currentFilterMap[e];
+          return ChoiceChip(
+            label: Text(e),
+            selectedColor: Colors.blue,
+            labelStyle:
+                TextStyle(color: isSelected ? Colors.white : Colors.grey),
+            selected: isSelected,
+            onSelected: (newBoolValue) {
+              _cubit?.onChangeFilter(e, newBoolValue);
+            },
+          );
+        }).toList(),
+      ),
     );
   }
 }
