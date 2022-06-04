@@ -10,6 +10,13 @@ jobs:
     name: Analyze, Test and Build
     runs-on: ubuntu-latest
     steps:
+      - name: Check branch name
+        uses: deepakputhraya/action-branch-name@master
+        with:
+          regex: '[\s\S]+\/\d+\/[\s\S]+' # Regex the branch should match. This example enforces grouping
+          allowed_prefixes: 'feature,bug,doc,enhance,tech' # All branches should start with the given prefix
+          ignore: main, develop # Ignore exactly matching branch names from convention
+
       - name: Checkout
         uses: actions/checkout@v1
 
