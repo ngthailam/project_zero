@@ -80,7 +80,9 @@ class _HomePageState extends State<HomePage> {
           style: TextStyle(fontSize: 28),
         ),
         const SizedBox(height: 32),
-        TuAiWidget(),
+        TuAiWidget(
+          onRequestFilterByFoodType: (type) => _cubit?.onChangeFilterAll(type),
+        ),
       ],
     );
   }

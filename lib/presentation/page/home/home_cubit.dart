@@ -82,6 +82,11 @@ class HomeCubit extends Cubit<HomeState> {
     _foodStreamSubscription?.cancel();
   }
 
+  onChangeFilterAll(FoodType type) {
+    currentFilterMap = type.toJson();
+    _emitFoodListWithFilter();
+  }
+
   void onChangeFilter(String e, bool newBoolValue) {
     currentFilterMap[e] = newBoolValue;
     _emitFoodListWithFilter();
