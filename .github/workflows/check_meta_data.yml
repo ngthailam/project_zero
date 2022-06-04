@@ -1,0 +1,17 @@
+name: Basic Flutter CI for non code related
+
+on: 
+  pull_request:
+    branches:    
+      - '**'
+  
+jobs:
+  build:
+    name: Check Pull request
+    runs-on: ubuntu-latest
+    steps:
+    - name: Check pull request name
+      uses: Slashgear/action-check-pr-title@v3.0.0
+      with:
+        regexp: '(?:feature|bug|doc|enhance|tech)\/\d\/[\s\S]+' # Regex the title should match.
+      
