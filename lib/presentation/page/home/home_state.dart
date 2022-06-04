@@ -1,12 +1,15 @@
 import 'package:de1_mobile_friends/domain/model/food.dart';
+import 'package:de1_mobile_friends/tuAI/tu_ai.dart';
 
 abstract class HomeState {
   final List<Food>? foods;
   final Food? pickedFood;
+  final TuAiOutput? tuAiOutput;
 
   HomeState({
     this.foods,
     this.pickedFood,
+    this.tuAiOutput,
   });
 }
 
@@ -16,6 +19,6 @@ class HomePrimaryState extends HomeState {
   HomePrimaryState({
     List<Food>? foods,
     Food? pickedFood,
-  }) : super(foods: foods, pickedFood: pickedFood);
+    TuAiOutput? tuAiOutput,
+  }) : super(foods: foods, pickedFood: pickedFood, tuAiOutput: tuAiOutput);
 }
-

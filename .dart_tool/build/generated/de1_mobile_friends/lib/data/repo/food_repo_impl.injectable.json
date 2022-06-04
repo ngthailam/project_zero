@@ -1,1 +1,0 @@
-[{"type":{"import":"package:de1_mobile_friends/domain/repo/food_repo.dart","name":"FoodRepo","isNullable":false},"typeImpl":{"import":"package:de1_mobile_friends/data/repo/food_repo_impl.dart","name":"FoodRepoImpl","isNullable":false},"isAsync":false,"preResolve":false,"injectableType":0,"dependsOn":[],"environments":[],"dependencies":[],"constructorName":""}]

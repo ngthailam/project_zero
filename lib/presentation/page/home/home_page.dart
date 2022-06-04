@@ -5,6 +5,7 @@ import 'package:de1_mobile_friends/app_router.dart';
 import 'package:de1_mobile_friends/main.dart';
 import 'package:de1_mobile_friends/presentation/page/home/home_cubit.dart';
 import 'package:de1_mobile_friends/presentation/page/home/home_state.dart';
+import 'package:de1_mobile_friends/presentation/widget/tu_ai_widget.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_fortune_wheel/flutter_fortune_wheel.dart';
@@ -58,7 +59,7 @@ class _HomePageState extends State<HomePage> {
                 children: [
                   Expanded(child: _foodWheel()),
                   const SizedBox(width: 32),
-                  Expanded(child: _result()),
+                  Expanded(child: _rightSide()),
                 ],
               ),
             ),
@@ -72,6 +73,17 @@ class _HomePageState extends State<HomePage> {
           ],
         ),
       ),
+    );
+  }
+
+  Widget _rightSide() {
+    return Column(
+      mainAxisSize: MainAxisSize.min,
+      children: [
+        _result(),
+        const SizedBox(height: 92),
+        TuAiWidget(),
+      ],
     );
   }
 

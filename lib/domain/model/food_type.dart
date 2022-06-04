@@ -14,6 +14,19 @@ class FoodType {
     this.water = false,
   });
 
+  factory FoodType.allTrue() => FoodType(hot: true, cold: true, water: true);
+
+  FoodType copyWith({
+    bool? cold,
+    bool? hot,
+    bool? water,
+  }) =>
+      FoodType(
+        cold: cold ?? this.cold,
+        hot: hot ?? this.hot,
+        water: water ?? this.water,
+      );
+
   factory FoodType.fromJson(Map<String, dynamic> json) =>
       _$FoodTypeFromJson(json);
 
