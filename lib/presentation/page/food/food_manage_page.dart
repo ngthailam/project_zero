@@ -60,7 +60,7 @@ class _FoodManagePageState extends State<FoodManagePage> {
       },
       builder: (context, state) {
         if (state is FoodManageInitialState) {
-          return Center(
+          return const Center(
             child: CupertinoActivityIndicator(),
           );
         }
@@ -92,7 +92,7 @@ class _FoodManagePageState extends State<FoodManagePage> {
                         onPressed: () {
                           _cubit?.deleteFood(list[i].id);
                         },
-                        icon: Icon(
+                        icon: const Icon(
                           Icons.delete,
                           size: 24,
                           color: Colors.grey,
@@ -106,12 +106,12 @@ class _FoodManagePageState extends State<FoodManagePage> {
         }
 
         if (state.foods?.isEmpty == true) {
-          return Center(
+          return const Center(
             child: Text("No food yet"),
           );
         }
 
-        return Center(
+        return const Center(
           child: Text("Something went wrong"),
         );
       },
@@ -132,7 +132,7 @@ class _FoodManagePageState extends State<FoodManagePage> {
           ),
           color: Colors.white,
           borderRadius: BorderRadius.circular(16),
-          boxShadow: [
+          boxShadow: const [
             BoxShadow(
               color: Colors.grey,
               offset: Offset(0.0, 1.0), //(x,y)
@@ -144,11 +144,11 @@ class _FoodManagePageState extends State<FoodManagePage> {
           mainAxisSize: MainAxisSize.min,
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Text("Create new food"),
+            const Text("Create new food"),
             const SizedBox(height: 16),
             _nameInput(),
             const SizedBox(height: 16),
-            Text("Choose food type"),
+            const Text("Choose food type"),
             const SizedBox(height: 8),
             _foodTypes(),
             const SizedBox(height: 16),
@@ -166,7 +166,7 @@ class _FoodManagePageState extends State<FoodManagePage> {
   }
 
   Widget _confirmBtn() {
-    return Container(
+    return SizedBox(
       width: double.infinity,
       child: TextButton(
         style: ButtonStyle(
@@ -178,7 +178,7 @@ class _FoodManagePageState extends State<FoodManagePage> {
           _cubit?.addFood(_createTextEdtCtrl?.text);
           _createTextEdtCtrl?.text = '';
         },
-        child: Text(
+        child: const Text(
           "Create",
           style: TextStyle(color: Colors.white),
         ),
@@ -187,7 +187,7 @@ class _FoodManagePageState extends State<FoodManagePage> {
   }
 
   Widget _nameInput() {
-    return Container(
+    return SizedBox(
       width: double.infinity,
       child: TextField(
         focusNode: _createTextFocusNode,
@@ -200,7 +200,7 @@ class _FoodManagePageState extends State<FoodManagePage> {
           _createTextFocusNode?.requestFocus();
         },
         controller: _createTextEdtCtrl,
-        decoration: InputDecoration(hintText: "Food name"),
+        decoration: const InputDecoration(hintText: "Food name"),
       ),
     );
   }

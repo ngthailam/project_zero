@@ -1,6 +1,7 @@
 import 'package:de1_mobile_friends/domain/model/food_type.dart';
 import 'package:injectable/injectable.dart';
 
+// ignore_for_file: constant_identifier_names
 class TuAiInput {
   final double? temp;
 

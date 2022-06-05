@@ -38,13 +38,13 @@ class TuAiMessageWidget extends StatelessWidget {
               onPressed: () {
                 onYesNoRespond(false);
               },
-              child: Text("No"),
+              child: const Text("No"),
             ),
             TextButton(
               onPressed: () {
                 onYesNoRespond(true);
               },
-              child: Text("Yes"),
+              child: const Text("Yes"),
             ),
           ],
         )
@@ -58,7 +58,7 @@ class TuAiMessageWidget extends StatelessWidget {
       color: Colors.grey,
       tail: false,
       isSender: false,
-      textStyle: TextStyle(color: Colors.white, fontSize: 16),
+      textStyle: const TextStyle(color: Colors.white, fontSize: 16),
     );
   }
 }

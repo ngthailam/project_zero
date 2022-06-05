@@ -95,11 +95,11 @@ class HomeCubit extends Cubit<HomeState> {
   void _emitFoodListWithFilter() {
     // prepare filter that is false
     Map<String, bool> falseOnlyMap = {};
-    currentFilterMap.entries.forEach((element) {
+    for (var element in currentFilterMap.entries) {
       if (element.value == false) {
         falseOnlyMap[element.key] = false;
       }
-    });
+    }
     // apply filter
     List<Food> filteredFoodList = [];
 
@@ -110,12 +110,12 @@ class HomeCubit extends Cubit<HomeState> {
         final foodElementType = foodElement.type!.toJson();
 
         var isValid = true;
-        foodElementType.keys.forEach((typeElement) {
+        for (var typeElement in foodElementType.keys) {
           if (falseOnlyMap[typeElement] == false &&
               foodElementType[typeElement] != false) {
             isValid = false;
           }
-        });
+        }
 
         return isValid;
       }).toList();

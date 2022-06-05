@@ -22,9 +22,9 @@ class _TuAiWidgetState extends State<TuAiWidget> {
 
   bool _isWaitingTuAi = true;
 
-  List<Messages> _messages = [];
+  final List<Messages> _messages = [];
 
-  TuAi _tuAi = getIt<TuAi>();
+  final TuAi _tuAi = getIt<TuAi>();
 
   Config _config = Config();
 
@@ -56,7 +56,7 @@ class _TuAiWidgetState extends State<TuAiWidget> {
 
   @override
   Widget build(BuildContext context) {
-    return Container(
+    return SizedBox(
         height: 500,
         width: 500,
         child: Column(
@@ -74,7 +74,7 @@ class _TuAiWidgetState extends State<TuAiWidget> {
 
   Widget _tuAiMsg(int position) {
     if (_messages.length < position) {
-      return SizedBox.shrink();
+      return const SizedBox.shrink();
     }
     final msg = _messages[_messages.length - position];
     if (msg.isSender) {
@@ -83,7 +83,7 @@ class _TuAiWidgetState extends State<TuAiWidget> {
       return Row(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Align(
+          const Align(
             alignment: Alignment.topCenter,
             child: CircleAvatar(
               radius: 20,
@@ -115,10 +115,10 @@ class _TuAiWidgetState extends State<TuAiWidget> {
   Widget _myMsg(String? msg) {
     return BubbleSpecialOne(
       text: msg ?? "",
-      color: Color(0xFF1B97F3),
+      color: const Color(0xFF1B97F3),
       tail: false,
       isSender: true,
-      textStyle: TextStyle(color: Colors.white, fontSize: 16),
+      textStyle: const TextStyle(color: Colors.white, fontSize: 16),
     );
   }
 
@@ -160,7 +160,7 @@ class _TuAiWidgetState extends State<TuAiWidget> {
   }
 
   void _triggerTuAiRespondsUserInput(userInput) {
-    Future.delayed(Duration(seconds: 1), () {
+    Future.delayed(const Duration(seconds: 1), () {
       setState(() {
         final output = _tuAi.respondsUserInput(
           TuAiUserInput(
