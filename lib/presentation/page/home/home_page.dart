@@ -45,7 +45,7 @@ class _HomePageState extends State<HomePage> {
         padding: const EdgeInsets.all(32),
         child: Column(
           children: [
-            Text(
+            const Text(
               "What to eat for lunch? Spin the wheel!!!",
               style: TextStyle(
                 fontWeight: FontWeight.bold,
@@ -75,7 +75,7 @@ class _HomePageState extends State<HomePage> {
       children: [
         _result(),
         const SizedBox(height: 92),
-        Text(
+        const Text(
           "Chat with AI:",
           style: TextStyle(fontSize: 28),
         ),
@@ -99,14 +99,14 @@ class _HomePageState extends State<HomePage> {
           mainAxisSize: MainAxisSize.min,
           crossAxisAlignment: CrossAxisAlignment.center,
           children: [
-            Text(
+            const Text(
               "You have spinned:",
               style: TextStyle(fontSize: 32),
             ),
             const SizedBox(height: 24),
             Text(
               state.pickedFood!.name.toUpperCase(),
-              style: TextStyle(fontWeight: FontWeight.bold, fontSize: 48),
+              style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 48),
             ),
             ConfettiWidget(
               confettiController: _confettiController!,
@@ -139,7 +139,7 @@ class _HomePageState extends State<HomePage> {
         );
       }
 
-      return SizedBox.shrink();
+      return const SizedBox.shrink();
     });
   }
 
@@ -153,7 +153,7 @@ class _HomePageState extends State<HomePage> {
           onPressed: () {
             Navigator.of(context).pushNamed(AppRouter.foodManage);
           },
-          child: Text("Edit foods"),
+          child: const Text("Edit foods"),
         ),
         const SizedBox(height: 32),
         SizedBox(
@@ -161,22 +161,22 @@ class _HomePageState extends State<HomePage> {
           height: 80,
           child: TextButton(
             style: ButtonStyle(
-              overlayColor:
-                  MaterialStateProperty.all(Color.fromARGB(255, 167, 215, 254)),
-              backgroundColor:
-                  MaterialStateProperty.all(Color.fromARGB(255, 232, 232, 232)),
+              overlayColor: MaterialStateProperty.all(
+                  const Color.fromARGB(255, 167, 215, 254)),
+              backgroundColor: MaterialStateProperty.all(
+                  const Color.fromARGB(255, 232, 232, 232)),
             ),
             onPressed: () {
               _cubit!.onSpin();
             },
-            child: Text(
+            child: const Text(
               "Spin",
               style: TextStyle(fontSize: 32),
             ),
           ),
         ),
         const SizedBox(height: 16),
-        Text("Wheel filter"),
+        const Text("Wheel filter"),
         const SizedBox(height: 16),
         _filters(),
       ],
@@ -189,7 +189,7 @@ class _HomePageState extends State<HomePage> {
         final foods = state.foods;
 
         if (foods?.isNotEmpty != true) {
-          return Text("Something went wrong");
+          return const Text("Something went wrong");
         }
 
         if (foods!.length == 1) {
@@ -200,9 +200,9 @@ class _HomePageState extends State<HomePage> {
           height: 400,
           width: 400,
           child: FortuneWheel(
-            key: Key('Food wheel'),
+            key: const Key('Food wheel'),
             selected: _cubit!.wheelController.stream,
-            duration: Duration(seconds: 5),
+            duration: const Duration(seconds: 5),
             alignment: Alignment.centerRight,
             indicators: const [
               FortuneIndicator(
