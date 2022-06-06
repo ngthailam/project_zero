@@ -2,6 +2,7 @@ import 'dart:math';
 
 import 'package:confetti/confetti.dart';
 import 'package:de1_mobile_friends/app_router.dart';
+import 'package:de1_mobile_friends/domain/model/food.dart';
 import 'package:de1_mobile_friends/main.dart';
 import 'package:de1_mobile_friends/presentation/page/home/home_cubit.dart';
 import 'package:de1_mobile_friends/presentation/page/home/home_state.dart';
@@ -21,12 +22,13 @@ class _HomePageState extends State<HomePage> {
   ConfettiController? _confettiController;
 
   HomeCubit? _cubit;
+  Food? _foodResultTemp;
 
   @override
   void initState() {
     _cubit = getIt<HomeCubit>();
     _confettiController =
-        ConfettiController(duration: const Duration(milliseconds: 1000));
+        ConfettiController(duration: const Duration(milliseconds: 500));
     super.initState();
   }
 
@@ -53,14 +55,16 @@ class _HomePageState extends State<HomePage> {
               ),
             ),
             const SizedBox(height: 52),
-            BlocProvider<HomeCubit>(
-              create: (context) => _cubit!..initialize(),
-              child: Row(
-                children: [
-                  Expanded(child: _left()),
-                  const SizedBox(width: 32),
-                  Expanded(child: _rightSide()),
-                ],
+            Expanded(
+              child: BlocProvider<HomeCubit>(
+                create: (context) => _cubit!..initialize(),
+                child: Row(
+                  children: [
+                    Expanded(child: _left()),
+                    const SizedBox(width: 32),
+                    Expanded(child: _rightSide()),
+                  ],
+                ),
               ),
             ),
           ],
@@ -80,8 +84,10 @@ class _HomePageState extends State<HomePage> {
           style: TextStyle(fontSize: 28),
         ),
         const SizedBox(height: 32),
-        TuAiWidget(
-          onRequestFilterByFoodType: (type) => _cubit?.onChangeFilterAll(type),
+        Expanded(
+          child: TuAiWidget(
+            onRequestFilterByFoodType: (type) => _cubit?.onChangeFilterAll(type),
+          ),
         ),
       ],
     );
@@ -89,8 +95,16 @@ class _HomePageState extends State<HomePage> {
 
   Widget _result() {
     return BlocConsumer<HomeCubit, HomeState>(listener: (context, state) {
-      if (state.pickedFood != null) {
+      if (_foodResultTemp == null) {
+        _foodResultTemp = state.pickedFood;
         _confettiController?.play();
+      } else {
+        if (_foodResultTemp != state.pickedFood) {
+          setState(() {
+            _foodResultTemp = state.pickedFood;
+          });
+          _confettiController?.play();
+        }
       }
     }, builder: (context, state) {
       if (state.pickedFood != null) {
@@ -111,30 +125,24 @@ class _HomePageState extends State<HomePage> {
             ConfettiWidget(
               confettiController: _confettiController!,
               blastDirection: -pi / 2,
-              emissionFrequency: 0.01,
-              numberOfParticles: 20,
-              maxBlastForce: 60,
-              minBlastForce: 50,
+              emissionFrequency: 0.0001,
+              numberOfParticles: 10,
               gravity: 0.3,
             ),
             ConfettiWidget(
               confettiController: _confettiController!,
-              blastDirection: -pi / 3,
-              emissionFrequency: 0.02,
-              numberOfParticles: 25,
-              maxBlastForce: 50,
-              minBlastForce: 30,
+              blastDirection: -pi / 4,
+              emissionFrequency: 0.0001,
+              numberOfParticles: 10,
               gravity: 0.3,
             ),
             ConfettiWidget(
               confettiController: _confettiController!,
-              blastDirection: -pi / 0.5,
-              emissionFrequency: 0.02,
-              numberOfParticles: 20,
-              maxBlastForce: 50,
-              minBlastForce: 40,
+              blastDirection: -3 *pi / 4,
+              emissionFrequency: 0.0001,
+              numberOfParticles: 10,
               gravity: 0.3,
-            )
+            ),
           ],
         );
       }
@@ -216,6 +224,9 @@ class _HomePageState extends State<HomePage> {
             physics: NoPanPhysics(),
             onAnimationEnd: () {
               _cubit!.onSpinAnimEnd();
+              setState(() {
+                _foodResultTemp = state.pickedFood;
+              });
             },
             items: foods.map((e) => FortuneItem(child: Text(e.name))).toList(),
           ),
