@@ -3,7 +3,7 @@ name: Basic Flutter CI
 on: 
   pull_request:
     branches:    
-      - '**'
+      - 'main'
   
 jobs:
   build:
@@ -42,7 +42,7 @@ jobs:
       - name: Run tests
         run: flutter test
 
-      # Build apk.
+      # Build web
       - name: Build web
         run: flutter build web --web-renderer html
       
