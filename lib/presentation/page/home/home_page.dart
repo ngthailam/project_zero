@@ -1,8 +1,6 @@
 import 'dart:math';
-
 import 'package:confetti/confetti.dart';
 import 'package:de1_mobile_friends/app_router.dart';
-import 'package:de1_mobile_friends/domain/model/food.dart';
 import 'package:de1_mobile_friends/main.dart';
 import 'package:de1_mobile_friends/presentation/page/home/home_cubit.dart';
 import 'package:de1_mobile_friends/presentation/page/home/home_state.dart';
@@ -22,7 +20,6 @@ class _HomePageState extends State<HomePage> {
   ConfettiController? _confettiController;
 
   HomeCubit? _cubit;
-  Food? _foodResultTemp;
 
   @override
   void initState() {
@@ -86,7 +83,8 @@ class _HomePageState extends State<HomePage> {
         const SizedBox(height: 32),
         Expanded(
           child: TuAiWidget(
-            onRequestFilterByFoodType: (type) => _cubit?.onChangeFilterAll(type),
+            onRequestFilterByFoodType: (type) =>
+                _cubit?.onChangeFilterAll(type),
           ),
         ),
       ],
@@ -95,16 +93,8 @@ class _HomePageState extends State<HomePage> {
 
   Widget _result() {
     return BlocConsumer<HomeCubit, HomeState>(listener: (context, state) {
-      if (_foodResultTemp == null) {
-        _foodResultTemp = state.pickedFood;
-        _confettiController?.play();
-      } else {
-        if (_foodResultTemp != state.pickedFood) {
-          setState(() {
-            _foodResultTemp = state.pickedFood;
-          });
-          _confettiController?.play();
-        }
+      if (state.foodResultTemp != null) {
+        _confettiController!.play();
       }
     }, builder: (context, state) {
       if (state.pickedFood != null) {
@@ -138,7 +128,7 @@ class _HomePageState extends State<HomePage> {
             ),
             ConfettiWidget(
               confettiController: _confettiController!,
-              blastDirection: -3 *pi / 4,
+              blastDirection: -3 * pi / 4,
               emissionFrequency: 0.0001,
               numberOfParticles: 10,
               gravity: 0.3,
@@ -224,9 +214,6 @@ class _HomePageState extends State<HomePage> {
             physics: NoPanPhysics(),
             onAnimationEnd: () {
               _cubit!.onSpinAnimEnd();
-              setState(() {
-                _foodResultTemp = state.pickedFood;
-              });
             },
             items: foods.map((e) => FortuneItem(child: Text(e.name))).toList(),
           ),

@@ -66,15 +66,19 @@ class HomeCubit extends Cubit<HomeState> {
   }
 
   Food? _pickedFood;
+  Food? _foodResultTemp;
 
   void onSpinAnimEnd() {
-    emit((state as HomePrimaryState).copyWith(pickedFood: _pickedFood));
+    emit((state as HomePrimaryState).copyWith(pickedFood: _pickedFood, foodResultTemp: _foodResultTemp));
   }
 
   void onSpin() {
     Random random = Random();
     int randomNumber = random.nextInt(state.foods!.length);
     _pickedFood = state.foods![randomNumber];
+    if (_foodResultTemp == null || _foodResultTemp != _pickedFood) {
+      _foodResultTemp = _pickedFood;
+    }
     wheelController.add(randomNumber);
   }
 
