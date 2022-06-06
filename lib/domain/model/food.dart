@@ -1,15 +1,16 @@
 import 'package:de1_mobile_friends/domain/model/food_type.dart';
+import 'package:equatable/equatable.dart';
 import 'package:json_annotation/json_annotation.dart';
 
 part 'food.g.dart';
 
 @JsonSerializable(explicitToJson: true)
-class Food {
+class Food extends Equatable{
   final String id;
   final String name;
   final FoodType? type;
 
-  Food({
+  const Food({
     required this.id,
     required this.name,
     this.type,
@@ -19,4 +20,7 @@ class Food {
 
   /// Connect the generated [_$PersonToJson] function to the `toJson` method.
   Map<String, dynamic> toJson() => _$FoodToJson(this);
+  
+  @override
+  List<Object?> get props => [id];
 }
