@@ -31,10 +31,11 @@ class _HomePageSmallState extends State<HomePageSmall> {
   Widget build(BuildContext context) {
     return Scaffold(
       body: Padding(
-        padding: const EdgeInsets.all(16),
+        padding: const EdgeInsets.all(16).copyWith(top: 0),
         child: SingleChildScrollView(
           child: Column(
             children: [
+              const SizedBox(height: 16),
               _mainTitle(),
               const SizedBox(height: 32),
               SpinResult(
