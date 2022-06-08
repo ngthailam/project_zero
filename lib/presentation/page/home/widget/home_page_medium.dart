@@ -32,9 +32,10 @@ class _HomePageMediumState extends State<HomePageMedium> {
   @override
   Widget build(BuildContext context) {
     return Padding(
-      padding: const EdgeInsets.all(32),
+      padding: const EdgeInsets.all(32).copyWith(top: 0),
       child: Column(
         children: [
+          const SizedBox(height: 16),
           const Text(
             "What to eat for lunch? Spin the wheel!!!",
             style: TextStyle(

@@ -1,4 +1,5 @@
 import 'package:de1_mobile_friends/app_router.dart';
+import 'package:de1_mobile_friends/presentation/main_page.dart';
 import 'package:de1_mobile_friends/presentation/page/food/food_manage_page.dart';
 import 'package:de1_mobile_friends/presentation/page/home/home_page.dart';
 import 'package:firebase_core/firebase_core.dart';
@@ -40,12 +41,13 @@ class MyApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return MaterialApp(
       debugShowCheckedModeBanner: false,
-      title: 'Siêu AI anh Tú',
+      title: 'Bữa trưa vui vẻ',
       theme: ThemeData(
         primarySwatch: Colors.blue,
       ),
-      initialRoute: AppRouter.home,
+      initialRoute: AppRouter.main,
       routes: {
+        AppRouter.main: (context) => const MainPage(),
         AppRouter.home: (context) => const HomePage(),
         AppRouter.foodManage: (context) => const FoodManagePage(),
       },
