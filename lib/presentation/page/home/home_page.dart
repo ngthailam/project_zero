@@ -1,12 +1,17 @@
+import 'dart:io';
 import 'dart:math';
 
 import 'package:confetti/confetti.dart';
 import 'package:de1_mobile_friends/app_router.dart';
+import 'package:de1_mobile_friends/data/client/weather_client.dart';
+import 'package:de1_mobile_friends/data/config_client/dio_client.dart';
 import 'package:de1_mobile_friends/domain/model/food.dart';
+import 'package:de1_mobile_friends/domain/model/weather_model.dart';
 import 'package:de1_mobile_friends/main.dart';
 import 'package:de1_mobile_friends/presentation/page/home/home_cubit.dart';
 import 'package:de1_mobile_friends/presentation/page/home/home_state.dart';
 import 'package:de1_mobile_friends/presentation/widget/tu_ai_widget.dart';
+import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_fortune_wheel/flutter_fortune_wheel.dart';
@@ -29,8 +34,15 @@ class _HomePageState extends State<HomePage> {
     _cubit = getIt<HomeCubit>();
     _confettiController =
         ConfettiController(duration: const Duration(milliseconds: 500));
+    // getWeather();
     super.initState();
   }
+
+  // Future<WeatherModel> getWeather() async {
+  //   final response = await client.getWeatherCurrent();
+  //   print('response.cod:${response.cod}');
+  //   return response;
+  // }
 
   @override
   void dispose() {
@@ -86,7 +98,8 @@ class _HomePageState extends State<HomePage> {
         const SizedBox(height: 32),
         Expanded(
           child: TuAiWidget(
-            onRequestFilterByFoodType: (type) => _cubit?.onChangeFilterAll(type),
+            onRequestFilterByFoodType: (type) =>
+                _cubit?.onChangeFilterAll(type),
           ),
         ),
       ],
@@ -138,7 +151,7 @@ class _HomePageState extends State<HomePage> {
             ),
             ConfettiWidget(
               confettiController: _confettiController!,
-              blastDirection: -3 *pi / 4,
+              blastDirection: -3 * pi / 4,
               emissionFrequency: 0.0001,
               numberOfParticles: 10,
               gravity: 0.3,

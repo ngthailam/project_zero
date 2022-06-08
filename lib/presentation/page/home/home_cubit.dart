@@ -3,9 +3,13 @@ import 'dart:math';
 
 import 'package:de1_mobile_friends/domain/interactor/config/get_all_config_interactor.dart';
 import 'package:de1_mobile_friends/domain/interactor/food/observe_all_food_interactor.dart';
+import 'package:de1_mobile_friends/domain/interactor/weather/add_temp_interactor.dart';
+import 'package:de1_mobile_friends/domain/interactor/weather/add_weather_interactor.dart';
+import 'package:de1_mobile_friends/domain/interactor/weather/get_weather_interactor.dart';
 import 'package:de1_mobile_friends/domain/model/config.dart';
 import 'package:de1_mobile_friends/domain/model/food.dart';
 import 'package:de1_mobile_friends/domain/model/food_type.dart';
+import 'package:de1_mobile_friends/domain/model/weather_model.dart';
 import 'package:de1_mobile_friends/presentation/page/home/home_state.dart';
 import 'package:de1_mobile_friends/tuAI/tu_ai.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -17,10 +21,16 @@ class HomeCubit extends Cubit<HomeState> {
     this._allFoodInteractor,
     this._tuAi,
     this._getConfigInteractor,
+    this._getWeatherInteractor,
+    this._addTempInteractor,
+    this._addWeatherInteractor,
   ) : super(HomeLoadingState());
 
   final ObserveAllFoodInteractor _allFoodInteractor;
   final GetConfigInteractor _getConfigInteractor;
+  final GetWeatherInteractor _getWeatherInteractor;
+  final AddTempInteractor _addTempInteractor;
+  final AddWeatherInteractor _addWeatherInteractor;
   final TuAi _tuAi;
 
   Config _config = Config();
@@ -32,6 +42,7 @@ class HomeCubit extends Cubit<HomeState> {
   void initialize() {
     _initTuAi();
     _observeFoods();
+    _getWeatherCurrent();
   }
 
   void _initTuAi() async {
@@ -125,5 +136,22 @@ class HomeCubit extends Cubit<HomeState> {
     emit(
       HomePrimaryState(foods: filteredFoodList, pickedFood: state.pickedFood),
     );
+  }
+
+  void _getWeatherCurrent() async {
+    final weatherModel = await _getWeatherInteractor.execute(null);
+    addWeather(
+        temp: weatherModel.current.temp,
+        weather: weatherModel.current.weather.first);
+  }
+
+  void addWeather({
+    required double temp,
+    required Weather weather,
+  }) {
+    final double exchangeTemp = temp - 273.15;
+    final double tempCurrent = double.parse(exchangeTemp.toStringAsFixed(2));
+    _addWeatherInteractor.execute(weather);
+    _addTempInteractor.execute(tempCurrent);
   }
 }

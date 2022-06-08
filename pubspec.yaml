@@ -46,10 +46,14 @@ dependencies:
   uuid: ^3.0.6
   confetti: ^0.6.0
   chat_bubbles: ^1.2.0
+  dio: ^4.0.6
+  retrofit: ^3.0.1+1
+  logger: ^1.1.0
 
 dev_dependencies:
   flutter_test:
     sdk: flutter
+  retrofit_generator: ^4.0.0
 
   # The "flutter_lints" package below contains a set of recommended lints to
   # encourage good coding practices. The lint set provided by the package is

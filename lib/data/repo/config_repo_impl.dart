@@ -7,7 +7,7 @@ import 'package:injectable/injectable.dart';
 class ConfigRepoImpl extends ConfigRepo {
   @override
   Future<Config> getConfig() async {
-    final ref = FirebaseDatabase.instance.ref("config");
+    final ref = FirebaseDatabase.instance.ref("config/temp");
 
     final snapshot = await ref.get();
     return Config.fromJson(snapshot.value as Map<String, dynamic>);

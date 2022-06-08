@@ -1,4 +1,6 @@
 import 'package:de1_mobile_friends/app_router.dart';
+import 'package:de1_mobile_friends/data/client/weather_client.dart';
+import 'package:de1_mobile_friends/data/config_client/dio_client.dart';
 import 'package:de1_mobile_friends/presentation/page/food/food_manage_page.dart';
 import 'package:de1_mobile_friends/presentation/page/home/home_page.dart';
 import 'package:firebase_core/firebase_core.dart';
