@@ -74,7 +74,7 @@ class _TuAiWidgetState extends State<TuAiWidget> {
 
   Widget _tuAiMsg(int position) {
     if (_messages.length < position) {
-      return const SizedBox.shrink();
+      return const SizedBox(height: 50);
     }
     final msg = _messages[_messages.length - position];
     if (msg.isSender) {
