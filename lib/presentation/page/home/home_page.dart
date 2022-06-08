@@ -1,6 +1,5 @@
 import 'dart:io';
 import 'dart:math';
-
 import 'package:confetti/confetti.dart';
 import 'package:de1_mobile_friends/app_router.dart';
 import 'package:de1_mobile_friends/data/client/weather_client.dart';
@@ -27,7 +26,6 @@ class _HomePageState extends State<HomePage> {
   ConfettiController? _confettiController;
 
   HomeCubit? _cubit;
-  Food? _foodResultTemp;
 
   @override
   void initState() {
@@ -108,16 +106,8 @@ class _HomePageState extends State<HomePage> {
 
   Widget _result() {
     return BlocConsumer<HomeCubit, HomeState>(listener: (context, state) {
-      if (_foodResultTemp == null) {
-        _foodResultTemp = state.pickedFood;
-        _confettiController?.play();
-      } else {
-        if (_foodResultTemp != state.pickedFood) {
-          setState(() {
-            _foodResultTemp = state.pickedFood;
-          });
-          _confettiController?.play();
-        }
+      if (state.foodResultTemp != null) {
+        _confettiController!.play();
       }
     }, builder: (context, state) {
       if (state.pickedFood != null) {
@@ -237,9 +227,6 @@ class _HomePageState extends State<HomePage> {
             physics: NoPanPhysics(),
             onAnimationEnd: () {
               _cubit!.onSpinAnimEnd();
-              setState(() {
-                _foodResultTemp = state.pickedFood;
-              });
             },
             items: foods.map((e) => FortuneItem(child: Text(e.name))).toList(),
           ),
