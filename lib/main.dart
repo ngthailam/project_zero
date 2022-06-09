@@ -1,4 +1,5 @@
 import 'package:de1_mobile_friends/app_router.dart';
+import 'package:de1_mobile_friends/domain/repo/place_repo.dart';
 import 'package:de1_mobile_friends/presentation/main_page.dart';
 import 'package:de1_mobile_friends/presentation/page/food/food_manage_page.dart';
 import 'package:de1_mobile_friends/presentation/page/home/home_page.dart';
@@ -30,6 +31,8 @@ void main() async {
     ),
   );
   configureDependencies();
+  getIt<PlaceRepo>().initialize();
+
   runApp(const MyApp());
 }
 

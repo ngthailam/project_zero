@@ -22,5 +22,5 @@ class Food extends Equatable{
   Map<String, dynamic> toJson() => _$FoodToJson(this);
   
   @override
-  List<Object?> get props => [id];
+  List<Object?> get props => [id, name];
 }
