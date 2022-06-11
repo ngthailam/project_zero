@@ -1,6 +1,6 @@
 import 'package:de1_mobile_friends/presentation/page/food/food_manage_page.dart';
 import 'package:de1_mobile_friends/presentation/page/home/home_page.dart';
-import 'package:de1_mobile_friends/presentation/page/places/place_page.dart';
+import 'package:de1_mobile_friends/presentation/page/place/place_page.dart';
 import 'package:flutter/material.dart';
 
 class MainPage extends StatefulWidget {
