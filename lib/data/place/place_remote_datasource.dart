@@ -7,6 +7,8 @@ abstract class PlaceRemoteDataSource {
   Stream<List<Place>> observePlaces();
 
   Future<void> addPlace(Place place);
+
+  Future<bool> deletePlace(String id);
 }
 
 @Injectable(as: PlaceRemoteDataSource)
@@ -30,5 +32,13 @@ class PlaceRemoteDataSourceImpl extends PlaceRemoteDataSource {
     DatabaseReference ref = firebase.ref("$firebaseRef/${savedPlace.id}");
     await ref.set(savedPlace.toJson());
     return;
+  }
+
+  @override
+  Future<bool> deletePlace(String id) async {
+    FirebaseDatabase firebase = FirebaseDatabase.instance;
+    DatabaseReference ref = firebase.ref("$firebaseRef/$id");
+    await ref.remove();
+    return true;
   }
 }

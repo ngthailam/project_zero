@@ -18,14 +18,16 @@ import 'domain/interactor/food/delete_food_interactor.dart' as _i17;
 import 'domain/interactor/food/get_all_food_interactor.dart' as _i7;
 import 'domain/interactor/food/observe_all_food_interactor.dart' as _i9;
 import 'domain/interactor/place/add_place_interactor.dart' as _i16;
-import 'domain/interactor/place/get_places_interactor.dart' as _i19;
-import 'domain/interactor/place/observe_place_interactor.dart' as _i21;
+import 'domain/interactor/place/delete_place_interactor.dart' as _i18;
+import 'domain/interactor/place/get_places_interactor.dart' as _i20;
+import 'domain/interactor/place/observe_place_interactor.dart' as _i22;
 import 'domain/repo/config_repo.dart' as _i3;
 import 'domain/repo/food_repo.dart' as _i5;
 import 'domain/repo/place_repo.dart' as _i12;
-import 'presentation/page/food/food_manage_cubit.dart' as _i18;
-import 'presentation/page/home/home_cubit.dart' as _i20;
-import 'presentation/page/place/place_cubit.dart' as _i22;
+import 'presentation/page/food/food_manage_cubit.dart' as _i19;
+import 'presentation/page/home/home_cubit.dart' as _i21;
+import 'presentation/page/place/place_cubit.dart' as _i24;
+import 'presentation/page/place_add/place_add_cubit.dart' as _i23;
 import 'tuAI/tu_ai.dart' as _i14; // ignore_for_file: unnecessary_lambdas
 
 // ignore_for_file: lines_longer_than_80_chars
@@ -53,21 +55,25 @@ _i1.GetIt $initGetIt(_i1.GetIt get,
       () => _i16.AddPlaceInteractor(get<_i12.PlaceRepo>()));
   gh.factory<_i17.DeleteFoodInteractor>(
       () => _i17.DeleteFoodInteractor(get<_i5.FoodRepo>()));
-  gh.factory<_i18.FoodManageCubit>(() => _i18.FoodManageCubit(
+  gh.factory<_i18.DeletePlaceInteractor>(
+      () => _i18.DeletePlaceInteractor(get<_i12.PlaceRepo>()));
+  gh.factory<_i19.FoodManageCubit>(() => _i19.FoodManageCubit(
       get<_i9.ObserveAllFoodInteractor>(),
       get<_i15.AddFoodInteractor>(),
       get<_i17.DeleteFoodInteractor>()));
-  gh.factory<_i19.GetPlacesInteractor>(
-      () => _i19.GetPlacesInteractor(get<_i12.PlaceRepo>()));
-  gh.factory<_i20.HomeCubit>(() => _i20.HomeCubit(
+  gh.factory<_i20.GetPlacesInteractor>(
+      () => _i20.GetPlacesInteractor(get<_i12.PlaceRepo>()));
+  gh.factory<_i21.HomeCubit>(() => _i21.HomeCubit(
       get<_i9.ObserveAllFoodInteractor>(),
       get<_i14.TuAi>(),
       get<_i8.GetConfigInteractor>()));
-  gh.factory<_i21.ObservePlaceInteractor>(
-      () => _i21.ObservePlaceInteractor(get<_i12.PlaceRepo>()));
-  gh.factory<_i22.PlaceCubit>(() => _i22.PlaceCubit(
-      get<_i21.ObservePlaceInteractor>(),
-      get<_i16.AddPlaceInteractor>(),
-      get<_i19.GetPlacesInteractor>()));
+  gh.factory<_i22.ObservePlaceInteractor>(
+      () => _i22.ObservePlaceInteractor(get<_i12.PlaceRepo>()));
+  gh.factory<_i23.PlaceAddCubit>(() => _i23.PlaceAddCubit(
+      get<_i16.AddPlaceInteractor>(), get<_i9.ObserveAllFoodInteractor>()));
+  gh.factory<_i24.PlaceCubit>(() => _i24.PlaceCubit(
+      get<_i22.ObservePlaceInteractor>(),
+      get<_i20.GetPlacesInteractor>(),
+      get<_i18.DeletePlaceInteractor>()));
   return get;
 }

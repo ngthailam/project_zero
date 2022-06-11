@@ -1,6 +1,6 @@
 import 'dart:async';
 
-import 'package:de1_mobile_friends/domain/interactor/place/add_place_interactor.dart';
+import 'package:de1_mobile_friends/domain/interactor/place/delete_place_interactor.dart';
 import 'package:de1_mobile_friends/domain/interactor/place/get_places_interactor.dart';
 import 'package:de1_mobile_friends/domain/interactor/place/observe_place_interactor.dart';
 import 'package:de1_mobile_friends/presentation/page/place/place_state.dart';
@@ -11,13 +11,13 @@ import 'package:injectable/injectable.dart';
 class PlaceCubit extends Cubit<PlaceState> {
   PlaceCubit(
     this._observePlaceInteractor,
-    this._addPlaceInteractor,
     this._getPlaceInteractor,
+    this._deletePlaceInteractor,
   ) : super(PlacePrimaryState());
 
   final ObservePlaceInteractor _observePlaceInteractor;
-  final AddPlaceInteractor _addPlaceInteractor;
   final GetPlacesInteractor _getPlaceInteractor;
+  final DeletePlaceInteractor _deletePlaceInteractor;
 
   StreamSubscription? _placeStreamSub;
 
@@ -30,12 +30,16 @@ class PlaceCubit extends Cubit<PlaceState> {
     });
   }
 
-  void addPlace() {
-    // do things here
-  }
-
   void manualDispose() {
     _placeStreamSub?.cancel();
     _placeStreamSub = null;
+  }
+
+  void deletePlace(String id) async {
+    try {
+      await _deletePlaceInteractor.execute(id);
+    } on Exception catch (e) {
+      emit(PlaceErrorState(e: e));
+    }
   }
 }

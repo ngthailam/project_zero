@@ -10,4 +10,6 @@ abstract class PlaceRepo {
   Future<void> addPlace(Place place);
 
   Future<List<Place>> getPlaces();
+
+  deletePlace(String id);
 }

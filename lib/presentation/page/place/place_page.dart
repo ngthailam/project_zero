@@ -1,6 +1,8 @@
+import 'package:de1_mobile_friends/domain/model/place.dart';
 import 'package:de1_mobile_friends/main.dart';
 import 'package:de1_mobile_friends/presentation/page/place/place_cubit.dart';
 import 'package:de1_mobile_friends/presentation/page/place/place_state.dart';
+import 'package:de1_mobile_friends/presentation/page/place_add/place_add_page.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
@@ -60,10 +62,44 @@ class _PlacePageState extends State<PlacePage> {
         return ListView.builder(
           itemCount: places!.length,
           itemBuilder: (context, i) {
-            return Text(places[i].name);
+            return _placeItem(places[i], i);
           },
         );
       },
+    );
+  }
+
+  Widget _placeItem(Place place, int i) {
+    final double topMargin = i == 0 ? 18 : 4;
+    return Container(
+      margin: EdgeInsets.only(
+        top: topMargin,
+        left: 32,
+        right: 32,
+        bottom: 4,
+      ),
+      decoration: BoxDecoration(
+          color: Colors.white,
+          border: Border.all(
+            color: Colors.grey,
+            style: BorderStyle.solid,
+            width: 1.0,
+          )),
+      padding: const EdgeInsets.all(16),
+      child: Row(
+        children: [
+          Expanded(child: Text(place.name)),
+          IconButton(
+              onPressed: () {
+                _cubit?.deletePlace(place.id);
+              },
+              icon: const Icon(
+                Icons.delete,
+                size: 24,
+                color: Colors.grey,
+              ))
+        ],
+      ),
     );
   }
 
@@ -77,7 +113,7 @@ class _PlacePageState extends State<PlacePage> {
           color: Colors.white,
         ),
         onPressed: () {
-          // show add place
+          showAddPlaceBottomSheet(context);
         },
       ),
     );

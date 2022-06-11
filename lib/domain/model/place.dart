@@ -1,3 +1,4 @@
+import 'package:de1_mobile_friends/uuid_generator.dart';
 import 'package:equatable/equatable.dart';
 import 'package:json_annotation/json_annotation.dart';
 
@@ -14,6 +15,9 @@ class Place extends Equatable {
     required this.name,
     required this.direction,
   });
+
+  factory Place.empty() =>
+      Place(id: generateRandomUuid(), name: '', direction: '');
 
   factory Place.fromJson(Map<String, dynamic> json) => _$PlaceFromJson(json);
 

@@ -42,4 +42,9 @@ class PlaceRepoImpl extends PlaceRepo {
     _placesRemoteStreamSub?.cancel();
     _placesRemoteStreamSub = null;
   }
+
+  @override
+  deletePlace(String id) {
+    _remoteDataSource.deletePlace(id);
+  }
 }
