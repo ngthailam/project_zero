@@ -1,7 +1,7 @@
-import 'package:de1_mobile_friends/presentation/page/home/home_cubit.dart';
-import 'package:de1_mobile_friends/presentation/page/home/home_state.dart';
+// import 'package:de1_mobile_friends/presentation/page/home/home_cubit.dart';
+// import 'package:de1_mobile_friends/presentation/page/home/home_state.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_bloc/flutter_bloc.dart';
+// import 'package:flutter_bloc/flutter_bloc.dart';
 
 class FoodWheelFilter extends StatelessWidget {
   const FoodWheelFilter({
@@ -15,24 +15,34 @@ class FoodWheelFilter extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return BlocBuilder<HomeCubit, HomeState>(
-      builder: (context, state) => Wrap(
-        spacing: 6,
-        runSpacing: 6,
-        children: filterMap.keys.map((e) {
-          final isSelected = filterMap[e];
-          return ChoiceChip(
-            label: Text(e),
-            selectedColor: Colors.blue,
-            labelStyle:
-                TextStyle(color: isSelected ? Colors.white : Colors.grey),
-            selected: isSelected,
-            onSelected: (newBoolValue) {
-              onSelected(filterMap[e], newBoolValue);
-            },
-          );
-        }).toList(),
-      ),
-    );
+    return const SizedBox.shrink();
+
+    // Commented due to issue#50
+    // return Column(
+    //   mainAxisSize: MainAxisSize.min,
+    //   children: [
+    //     const Text("Wheel filter"),
+    //     const SizedBox(height: 16),
+    //     BlocBuilder<HomeCubit, HomeState>(
+    //       builder: (context, state) => Wrap(
+    //         spacing: 6,
+    //         runSpacing: 6,
+    //         children: filterMap.keys.map((e) {
+    //           final isSelected = filterMap[e];
+    //           return ChoiceChip(
+    //             label: Text(e),
+    //             selectedColor: Colors.blue,
+    //             labelStyle:
+    //                 TextStyle(color: isSelected ? Colors.white : Colors.grey),
+    //             selected: isSelected,
+    //             onSelected: (newBoolValue) {
+    //               onSelected(filterMap[e], newBoolValue);
+    //             },
+    //           );
+    //         }).toList(),
+    //       ),
+    //     )
+    //   ],
+    // );
   }
 }

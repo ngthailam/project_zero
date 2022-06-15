@@ -1,7 +1,7 @@
 import 'package:de1_mobile_friends/main.dart';
 import 'package:de1_mobile_friends/presentation/page/food/food_manage_cubit.dart';
 import 'package:de1_mobile_friends/presentation/page/food/food_manage_state.dart';
-import 'package:de1_mobile_friends/presentation/page/food/widgets/food_type_picker.dart';
+import 'package:de1_mobile_friends/presentation/widget/occasion_picker.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -69,6 +69,7 @@ class _FoodManagePageState extends State<FoodManagePage> {
           final list = state.foods!;
           return ListView.builder(
             itemBuilder: (context, i) {
+              final item = list[i];
               final double topMargin = i == 0 ? 18 : 4;
               return Container(
                 margin: EdgeInsets.only(
@@ -87,10 +88,11 @@ class _FoodManagePageState extends State<FoodManagePage> {
                 padding: const EdgeInsets.all(16),
                 child: Row(
                   children: [
-                    Expanded(child: Text(list[i].name)),
+                    Expanded(child: Text(item.name)),
+                    _occasion(item.occasion),
                     IconButton(
                         onPressed: () {
-                          _cubit?.deleteFood(list[i].id);
+                          _cubit?.deleteFood(item.id);
                         },
                         icon: const Icon(
                           Icons.delete,
@@ -148,9 +150,12 @@ class _FoodManagePageState extends State<FoodManagePage> {
             const SizedBox(height: 16),
             _nameInput(),
             const SizedBox(height: 16),
-            const Text("Choose food type"),
-            const SizedBox(height: 8),
+            // Commented due to Issue#50
+            // const Text("Choose food type"),
+            // const SizedBox(height: 8),
             _foodTypes(),
+            const SizedBox(height: 16),
+            _occasionPicker(),
             const SizedBox(height: 16),
             _confirmBtn(),
           ],
@@ -160,9 +165,34 @@ class _FoodManagePageState extends State<FoodManagePage> {
   }
 
   Widget _foodTypes() {
-    return FoodTypePicker(
-      onChangedType: (type) => _cubit?.onChangedType(type),
-    );
+    return const SizedBox.shrink();
+    // Commented due to Issue#50
+    // return FoodTypePicker(
+    //   onChangedType: (type) => _cubit?.onChangedType(type),
+    // );
+  }
+
+  Widget _occasionPicker() {
+    return BlocBuilder<FoodManageCubit, FoodManageState>(
+        buildWhen: (previous, current) {
+      return previous.occasion != current.occasion;
+    }, builder: (context, state) {
+      if (state.occasion?.occasions.isNotEmpty != true) {
+        return const SizedBox.shrink();
+      }
+
+      return Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          const Text('Pick on what occasion can you eat this ?'),
+          const SizedBox(height: 8),
+          OccasionPicker(
+            occasion: state.occasion!,
+            onPickOccasion: _cubit!.onPickOccasion,
+          )
+        ],
+      );
+    });
   }
 
   Widget _confirmBtn() {
@@ -203,5 +233,19 @@ class _FoodManagePageState extends State<FoodManagePage> {
         decoration: const InputDecoration(hintText: "Food name"),
       ),
     );
+  }
+
+  Widget _occasion(Map<String, dynamic>? occasion) {
+    if (occasion?.isNotEmpty != true) return const SizedBox.shrink();
+
+    var text = '';
+
+    occasion!.forEach((key, value) {
+      if (value.toString() == true.toString()) {
+        text += '${text.isEmpty ? '' : ', '} $key';
+      }
+    });
+
+    return Text(text);
   }
 }
