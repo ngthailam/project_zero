@@ -1,8 +1,10 @@
 import 'package:confetti/confetti.dart';
 import 'package:de1_mobile_friends/app_router.dart';
+import 'package:de1_mobile_friends/domain/model/occasion.dart';
 import 'package:de1_mobile_friends/presentation/page/home/home_cubit.dart';
 import 'package:de1_mobile_friends/presentation/page/home/widget/common/food_wheel.dart';
 import 'package:de1_mobile_friends/presentation/page/home/widget/common/food_wheel_filter.dart';
+import 'package:de1_mobile_friends/presentation/page/home/widget/common/food_wheel_occasion_filter.dart';
 import 'package:de1_mobile_friends/presentation/page/home/widget/common/spin_result.dart';
 import 'package:de1_mobile_friends/presentation/page/home/widget/common/tu_ai_chat_box.dart';
 import 'package:flutter/material.dart';
@@ -91,10 +93,13 @@ class _HomePageMediumState extends State<HomePageMedium> {
           },
           child: const Text("Edit foods"),
         ),
-        const SizedBox(height: 32),
-        const Text("Wheel filter"),
         const SizedBox(height: 16),
         _filters(),
+        const SizedBox(height: 16),
+        FoodWheelOccasionFilter(
+          onPickOccasion: (Occasion occasion) =>
+              _cubit?.onChangeOccasionFilter(occasion),
+        ),
       ],
     );
   }

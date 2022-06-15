@@ -26,8 +26,10 @@ class _TuAiWidgetState extends State<TuAiWidget> {
 
   final TuAi _tuAi = getIt<TuAi>();
 
+  // ignore: prefer_final_fields
   Config _config = Config();
 
+  // ignore: unused_field
   final GetConfigInteractor _getConfigInteractor = getIt<GetConfigInteractor>();
 
   @override
@@ -38,7 +40,7 @@ class _TuAiWidgetState extends State<TuAiWidget> {
   }
 
   void _initializeData() async {
-    _config = await _getConfigInteractor.execute(null);
+    // _config = await _getConfigInteractor.execute(null);
     final suggest = _tuAi.suggestFoodType(TuAiInput(temp: _config.temp));
     setState(() {
       _messages.add(

@@ -12,10 +12,12 @@ Food _$FoodFromJson(Map<String, dynamic> json) => Food(
       type: json['type'] == null
           ? null
           : FoodType.fromJson(json['type'] as Map<String, dynamic>),
+      occasion: json['occasion'] as Map<String, dynamic>?,
     );
 
 Map<String, dynamic> _$FoodToJson(Food instance) => <String, dynamic>{
       'id': instance.id,
       'name': instance.name,
       'type': instance.type?.toJson(),
+      'occasion': instance.occasion,
     };
