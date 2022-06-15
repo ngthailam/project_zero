@@ -1,12 +1,18 @@
 import 'package:de1_mobile_friends/domain/model/food.dart';
 import 'package:de1_mobile_friends/domain/model/food_type.dart';
+import 'package:de1_mobile_friends/domain/model/occasion.dart';
 import 'package:de1_mobile_friends/domain/repo/food_repo.dart';
+import 'package:de1_mobile_friends/domain/repo/occasion_repo.dart';
 import 'package:de1_mobile_friends/uuid_generator.dart';
 import 'package:firebase_database/firebase_database.dart';
 import 'package:injectable/injectable.dart';
 
 @Injectable(as: FoodRepo)
 class FoodRepoImpl extends FoodRepo {
+  final OccasionRepo _occasionRepo;
+
+  FoodRepoImpl(this._occasionRepo);
+
   @override
   Future<List<Food>> getAllFoods() async {
     try {
@@ -32,11 +38,17 @@ class FoodRepoImpl extends FoodRepo {
   }
 
   @override
-  Future<bool> addFood(String foodName, {FoodType? type}) async {
+  Future<bool> addFood(
+    String foodName, {
+    FoodType? type,
+    Occasion? occasion,
+  }) async {
+    Occasion foodOccasion = occasion ?? await _occasionRepo.getOccasions();
     final food = Food(
       id: generateRandomUuid(),
       name: foodName,
       type: type ?? FoodType(),
+      occasion: foodOccasion.occasions,
     );
     FirebaseDatabase firebase = FirebaseDatabase.instance;
     DatabaseReference ref = firebase.ref("food/${food.id}");
