@@ -1,3 +1,4 @@
+import 'package:de1_mobile_friends/domain/model/review.dart';
 import 'package:de1_mobile_friends/uuid_generator.dart';
 import 'package:equatable/equatable.dart';
 import 'package:json_annotation/json_annotation.dart';
@@ -9,11 +10,13 @@ class Place extends Equatable {
   final String id;
   final String name;
   final String? direction;
+  final Map<String, Review> reviews;
 
   const Place({
     required this.id,
     required this.name,
     required this.direction,
+    this.reviews = const {},
   });
 
   factory Place.empty() =>

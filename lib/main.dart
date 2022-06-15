@@ -1,8 +1,5 @@
 import 'package:de1_mobile_friends/app_router.dart';
 import 'package:de1_mobile_friends/domain/repo/place_repo.dart';
-import 'package:de1_mobile_friends/presentation/main_page.dart';
-import 'package:de1_mobile_friends/presentation/page/food/food_manage_page.dart';
-import 'package:de1_mobile_friends/presentation/page/home/home_page.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:get_it/get_it.dart';
@@ -48,12 +45,14 @@ class MyApp extends StatelessWidget {
       theme: ThemeData(
         primarySwatch: Colors.blue,
       ),
+      onGenerateRoute: (settings) => AppRouter.generateRoute(settings),
       initialRoute: AppRouter.main,
-      routes: {
-        AppRouter.main: (context) => const MainPage(),
-        AppRouter.home: (context) => const HomePage(),
-        AppRouter.foodManage: (context) => const FoodManagePage(),
-      },
+      // routes: {
+      //   AppRouter.main: (context) => const MainPage(),
+      //   AppRouter.home: (context) => const HomePage(),
+      //   AppRouter.foodManage: (context) => const FoodManagePage(),
+      //   AppRouter.placeDetail: (context) => PlaceDetailPage())
+      // },
     );
   }
 }

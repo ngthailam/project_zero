@@ -2,7 +2,7 @@ import 'dart:async';
 
 import 'package:de1_mobile_friends/domain/interactor/place/delete_place_interactor.dart';
 import 'package:de1_mobile_friends/domain/interactor/place/get_places_interactor.dart';
-import 'package:de1_mobile_friends/domain/interactor/place/observe_place_interactor.dart';
+import 'package:de1_mobile_friends/domain/interactor/place/observe_places_interactor.dart';
 import 'package:de1_mobile_friends/presentation/page/place/place_state.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:injectable/injectable.dart';
@@ -15,7 +15,7 @@ class PlaceCubit extends Cubit<PlaceState> {
     this._deletePlaceInteractor,
   ) : super(PlacePrimaryState());
 
-  final ObservePlaceInteractor _observePlaceInteractor;
+  final ObservePlacesInteractor _observePlaceInteractor;
   final GetPlacesInteractor _getPlaceInteractor;
   final DeletePlaceInteractor _deletePlaceInteractor;
 
