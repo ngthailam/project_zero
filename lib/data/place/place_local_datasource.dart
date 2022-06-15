@@ -2,6 +2,7 @@ import 'dart:async';
 
 import 'package:de1_mobile_friends/domain/model/place.dart';
 import 'package:injectable/injectable.dart';
+import 'package:collection/collection.dart';
 
 abstract class PlaceLocalDataSource {
   void savePlaces(List<Place> places);
@@ -9,6 +10,8 @@ abstract class PlaceLocalDataSource {
   Stream<List<Place>> observePlaces();
 
   List<Place> getPlaces();
+
+  Place? getPlace(String id);
 }
 
 @Singleton(as: PlaceLocalDataSource)
@@ -21,6 +24,11 @@ class PlaceLocalDataSourceImpl extends PlaceLocalDataSource {
   @override
   List<Place> getPlaces() {
     return _currentPlaces;
+  }
+
+  @override
+  Place? getPlace(String id) {
+    return _currentPlaces.firstWhereOrNull((element) => element.id == id);
   }
 
   @override

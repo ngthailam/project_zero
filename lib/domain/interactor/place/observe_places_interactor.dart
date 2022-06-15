@@ -4,11 +4,11 @@ import 'package:de1_mobile_friends/domain/repo/place_repo.dart';
 import 'package:injectable/injectable.dart';
 
 @injectable
-class ObservePlaceInteractor
+class ObservePlacesInteractor
     extends NonFutureBaseInteractor<void, Stream<List<Place>>> {
   final PlaceRepo _placeRepo;
 
-  ObservePlaceInteractor(this._placeRepo);
+  ObservePlacesInteractor(this._placeRepo);
 
   @override
   Stream<List<Place>> execute(void input) {

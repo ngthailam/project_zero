@@ -1,3 +1,4 @@
+import 'package:de1_mobile_friends/app_router.dart';
 import 'package:de1_mobile_friends/domain/model/place.dart';
 import 'package:de1_mobile_friends/main.dart';
 import 'package:de1_mobile_friends/presentation/page/place/place_cubit.dart';
@@ -71,34 +72,40 @@ class _PlacePageState extends State<PlacePage> {
 
   Widget _placeItem(Place place, int i) {
     final double topMargin = i == 0 ? 18 : 4;
-    return Container(
-      margin: EdgeInsets.only(
-        top: topMargin,
-        left: 32,
-        right: 32,
-        bottom: 4,
-      ),
-      decoration: BoxDecoration(
-          color: Colors.white,
-          border: Border.all(
-            color: Colors.grey,
-            style: BorderStyle.solid,
-            width: 1.0,
-          )),
-      padding: const EdgeInsets.all(16),
-      child: Row(
-        children: [
-          Expanded(child: Text(place.name)),
-          IconButton(
-              onPressed: () {
-                _cubit?.deletePlace(place.id);
-              },
-              icon: const Icon(
-                Icons.delete,
-                size: 24,
-                color: Colors.grey,
-              ))
-        ],
+    return GestureDetector(
+      onTap: () {
+        Navigator.of(context)
+            .pushNamed(AppRouter.placeDetail, arguments: place.id);
+      },
+      child: Container(
+        margin: EdgeInsets.only(
+          top: topMargin,
+          left: 32,
+          right: 32,
+          bottom: 4,
+        ),
+        decoration: BoxDecoration(
+            color: Colors.white,
+            border: Border.all(
+              color: Colors.grey,
+              style: BorderStyle.solid,
+              width: 1.0,
+            )),
+        padding: const EdgeInsets.all(16),
+        child: Row(
+          children: [
+            Expanded(child: Text(place.name)),
+            IconButton(
+                onPressed: () {
+                  _cubit?.deletePlace(place.id);
+                },
+                icon: const Icon(
+                  Icons.delete,
+                  size: 24,
+                  color: Colors.grey,
+                ))
+          ],
+        ),
       ),
     );
   }

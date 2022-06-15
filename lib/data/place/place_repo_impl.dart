@@ -3,8 +3,10 @@ import 'dart:async';
 import 'package:de1_mobile_friends/data/place/place_local_datasource.dart';
 import 'package:de1_mobile_friends/data/place/place_remote_datasource.dart';
 import 'package:de1_mobile_friends/domain/model/place.dart';
+import 'package:de1_mobile_friends/domain/model/review.dart';
 import 'package:de1_mobile_friends/domain/repo/place_repo.dart';
 import 'package:injectable/injectable.dart';
+import 'package:collection/collection.dart';
 
 @Singleton(as: PlaceRepo)
 class PlaceRepoImpl extends PlaceRepo {
@@ -38,6 +40,11 @@ class PlaceRepoImpl extends PlaceRepo {
   }
 
   @override
+  Future<Place> getPlace(String id) {
+    return Future.value(_localDataSource.getPlace(id));
+  }
+
+  @override
   dispose() {
     _placesRemoteStreamSub?.cancel();
     _placesRemoteStreamSub = null;
@@ -46,5 +53,17 @@ class PlaceRepoImpl extends PlaceRepo {
   @override
   deletePlace(String id) {
     _remoteDataSource.deletePlace(id);
+  }
+
+  @override
+  Stream<Place?> observeOnePlace(String input) {
+    return observePlaces().map((event) {
+      return event.firstWhereOrNull((element) => element.id == input);
+    });
+  }
+
+  @override
+  Future<void> addReview(Review review) {
+    return _remoteDataSource.addReview(review);
   }
 }
