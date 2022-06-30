@@ -19,4 +19,14 @@ abstract class PlaceRepo {
   Future<Place> getPlace(String id);
 
   Future<void> addReview(Review review);
+
+  Future<bool> addFoodInPlace({
+    required String foodId,
+    required String placeId,
+  });
+
+  Future<bool> removeFoodInPlace({
+    required String foodId,
+    required String placeId,
+  });
 }

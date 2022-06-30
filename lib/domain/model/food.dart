@@ -10,12 +10,16 @@ class Food extends Equatable {
   final String name;
   final FoodType? type;
   final Map<String, dynamic>? occasion;
+  // key: Place id
+  // value: is enabled
+  final Map<String, bool> places;
 
   const Food({
     required this.id,
     required this.name,
-    this.type,
     this.occasion,
+    this.type,
+    this.places = const {},
   });
 
   factory Food.fromJson(Map<String, dynamic> json) => _$FoodFromJson(json);
@@ -24,5 +28,11 @@ class Food extends Equatable {
   Map<String, dynamic> toJson() => _$FoodToJson(this);
 
   @override
-  List<Object?> get props => [id, name];
+  List<Object?> get props => [
+        id,
+        name,
+        type,
+        occasion,
+        places,
+      ];
 }

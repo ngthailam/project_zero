@@ -1,3 +1,4 @@
+import 'package:de1_mobile_friends/domain/model/food.dart';
 import 'package:de1_mobile_friends/domain/model/place.dart';
 
 abstract class PlaceState {
@@ -8,6 +9,17 @@ abstract class PlaceState {
 
 class PlacePrimaryState extends PlaceState {
   PlacePrimaryState({List<Place>? places}) : super(places);
+}
+
+class PlaceFoodSearchingState extends PlaceState {
+  final String keyword;
+  final List<Food>? searchResults;
+
+  PlaceFoodSearchingState({
+    List<Place>? places,
+    required this.keyword,
+    this.searchResults,
+  }) : super(places);
 }
 
 class PlaceErrorState extends PlaceState {

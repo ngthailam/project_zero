@@ -66,4 +66,23 @@ class PlaceRepoImpl extends PlaceRepo {
   Future<void> addReview(Review review) {
     return _remoteDataSource.addReview(review);
   }
+
+  @override
+  Future<bool> addFoodInPlace({
+    required String foodId,
+    required String placeId,
+  }) {
+    return _remoteDataSource.addFoodInPlace(foodId: foodId, placeId: placeId);
+  }
+
+  @override
+  Future<bool> removeFoodInPlace({
+    required String foodId,
+    required String placeId,
+  }) {
+    return _remoteDataSource.removeFoodInPlace(
+      foodId: foodId,
+      placeId: placeId,
+    );
+  }
 }

@@ -11,12 +11,16 @@ class Place extends Equatable {
   final String name;
   final String? direction;
   final Map<String, Review> reviews;
+  // Key: food id
+  // value: is enabled (always true currently)
+  final Map<String, bool> foods;
 
   const Place({
     required this.id,
     required this.name,
     required this.direction,
     this.reviews = const {},
+    this.foods = const {},
   });
 
   factory Place.empty() =>
@@ -39,5 +43,11 @@ class Place extends Equatable {
       );
 
   @override
-  List<Object?> get props => [id, name, direction];
+  List<Object?> get props => [
+        id,
+        name,
+        direction,
+        reviews,
+        foods,
+      ];
 }
