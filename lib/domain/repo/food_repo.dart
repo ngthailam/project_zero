@@ -10,4 +10,16 @@ abstract class FoodRepo {
   Stream<List<Food>> observeAllFoods();
 
   Future<bool> deleteFood(String id);
+
+  Future<bool> addPlaceInFood({
+    required String foodId,
+    required String placeId,
+  });
+
+  Future<bool> deletePlaceInFood({
+    required String foodId,
+    required String placeId,
+  });
+
+  Future<List<Food>> searchByName({required String keyword});
 }
