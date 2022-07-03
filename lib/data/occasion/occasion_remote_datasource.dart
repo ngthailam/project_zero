@@ -16,7 +16,11 @@ class OccasionRemoteDataSourceImpl extends OccasionRemoteDataSource {
       final ref = FirebaseDatabase.instance.ref(firebaseRef);
 
       final snapshot = await ref.get();
-      return Occasion(occasions: snapshot.value as Map<String, dynamic>);
+      final snapshotMap = snapshot.value as Map<String, dynamic>;
+      final occasions =
+          snapshotMap.map(((key, value) => MapEntry(key, value as String)));
+
+      return Occasion(occasions: occasions);
     } catch (e) {
       return Occasion();
     }

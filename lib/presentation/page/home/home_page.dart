@@ -1,9 +1,7 @@
-import 'package:confetti/confetti.dart';
 import 'package:de1_mobile_friends/main.dart';
-import 'package:de1_mobile_friends/presentation/page/home/home_cubit.dart';
-import 'package:de1_mobile_friends/presentation/page/home/widget/home_page_medium.dart';
-import 'package:de1_mobile_friends/presentation/page/home/widget/home_page_small.dart';
-import 'package:de1_mobile_friends/presentation/utils/constants.dart';
+import 'package:de1_mobile_friends/presentation/page/home/bloc/home_cubit.dart';
+import 'package:de1_mobile_friends/presentation/page/home/bloc/home_state.dart';
+import 'package:de1_mobile_friends/presentation/page/home/widget/home/home_page_medium.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
@@ -14,16 +12,13 @@ class HomePage extends StatefulWidget {
   State<HomePage> createState() => _HomePageState();
 }
 
-class _HomePageState extends State<HomePage> {
-  ConfettiController? _confettiController;
-
+class _HomePageState extends State<HomePage>
+    with AutomaticKeepAliveClientMixin {
   HomeCubit? _cubit;
 
   @override
   void initState() {
     _cubit = getIt<HomeCubit>();
-    _confettiController =
-        ConfettiController(duration: const Duration(milliseconds: 500));
     super.initState();
   }
 
@@ -31,23 +26,31 @@ class _HomePageState extends State<HomePage> {
   void dispose() {
     _cubit?.manualDispose();
     _cubit = null;
-    _confettiController?.dispose();
+
     super.dispose();
   }
 
   @override
   Widget build(BuildContext context) {
+    super.build(context);
     return Scaffold(
       body: BlocProvider<HomeCubit>(
-        create: (context) => _cubit!..initialize(),
-        child: isMobile(context)
-            ? HomePageSmall(
-                confettiController: _confettiController!,
-              )
-            : HomePageMedium(
-                confettiController: _confettiController!,
-              ),
+        create: (context) {
+          WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
+            _cubit?.initialize();
+          });
+          return _cubit!;
+        },
+        child: BlocListener<HomeCubit, HomeState>(
+          listener: (context, state) async {
+            // Do something here
+          },
+          child: const HomePageMedium(),
+        ),
       ),
     );
   }
+
+  @override
+  bool get wantKeepAlive => true;
 }
