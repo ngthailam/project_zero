@@ -1,5 +1,5 @@
 class Occasion {
-  final Map<String, dynamic> occasions;
+  final Map<String, String> occasions;
 
   Occasion({this.occasions = const {}});
 }

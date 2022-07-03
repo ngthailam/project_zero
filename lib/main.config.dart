@@ -35,7 +35,7 @@ import 'domain/repo/food_repo.dart' as _i18;
 import 'domain/repo/occasion_repo.dart' as _i8;
 import 'domain/repo/place_repo.dart' as _i12;
 import 'presentation/page/food/food_manage_cubit.dart' as _i33;
-import 'presentation/page/home/home_cubit.dart' as _i34;
+import 'presentation/page/home/bloc/home_cubit.dart' as _i34;
 import 'presentation/page/place/place_cubit.dart' as _i35;
 import 'presentation/page/place_add/place_add_cubit.dart' as _i27;
 import 'presentation/page/place_detail/place_detail_cubit.dart' as _i28;
@@ -102,10 +102,7 @@ _i1.GetIt $initGetIt(_i1.GetIt get,
       get<_i32.DeleteFoodInteractor>(),
       get<_i21.GetOccasionInteractor>()));
   gh.factory<_i34.HomeCubit>(() => _i34.HomeCubit(
-      get<_i24.ObserveAllFoodInteractor>(),
-      get<_i14.TuAi>(),
-      get<_i5.GetConfigInteractor>(),
-      get<_i21.GetOccasionInteractor>()));
+      get<_i24.ObserveAllFoodInteractor>(), get<_i21.GetOccasionInteractor>()));
   gh.factory<_i35.PlaceCubit>(() => _i35.PlaceCubit(
       get<_i26.ObservePlacesInteractor>(),
       get<_i23.GetPlacesInteractor>(),

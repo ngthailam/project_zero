@@ -1,7 +1,6 @@
 import 'package:de1_mobile_friends/main.dart';
 import 'package:de1_mobile_friends/presentation/page/food/food_manage_cubit.dart';
 import 'package:de1_mobile_friends/presentation/page/food/food_manage_state.dart';
-import 'package:de1_mobile_friends/presentation/widget/occasion_picker.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -181,15 +180,12 @@ class _FoodManagePageState extends State<FoodManagePage> {
         return const SizedBox.shrink();
       }
 
+      // TODO: remove this
       return Column(
         crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          const Text('Pick on what occasion can you eat this ?'),
-          const SizedBox(height: 8),
-          OccasionPicker(
-            occasion: state.occasion!,
-            onPickOccasion: _cubit!.onPickOccasion,
-          )
+        children: const [
+          Text('Pick on what occasion can you eat this ?'),
+          SizedBox(height: 8),
         ],
       );
     });
