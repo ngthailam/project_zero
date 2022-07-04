@@ -47,6 +47,7 @@ dependencies:
   flutter_rating_bar: ^4.0.1
   copy_with_extension: ^4.0.2
   dropdown_button2: ^1.6.3
+  expandable: ^5.0.1
 
 dev_dependencies:
   flutter_test:

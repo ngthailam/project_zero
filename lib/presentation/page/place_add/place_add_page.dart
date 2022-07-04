@@ -1,37 +1,51 @@
+import 'package:de1_mobile_friends/domain/model/place.dart';
 import 'package:de1_mobile_friends/main.dart';
 import 'package:de1_mobile_friends/presentation/page/place_add/place_add_cubit.dart';
 import 'package:de1_mobile_friends/presentation/page/place_add/place_add_state.dart';
+import 'package:de1_mobile_friends/presentation/utils/colors.dart';
+import 'package:de1_mobile_friends/presentation/widget/primary_button.dart';
+import 'package:de1_mobile_friends/presentation/widget/primary_input.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
-Future showAddPlaceBottomSheet(BuildContext context) {
-  return showModalBottomSheet(
+Future<SavePlaceOutput?> showSavePlaceDialog(
+  BuildContext context, {
+  Place? place,
+}) {
+  return showDialog<SavePlaceOutput>(
     context: context,
-    isScrollControlled: false,
-    isDismissible: false,
-    backgroundColor: Theme.of(context).scaffoldBackgroundColor,
-    shape: const RoundedRectangleBorder(
-      borderRadius: BorderRadius.only(
-        topLeft: Radius.circular(16),
-        topRight: Radius.circular(16),
-      ),
-    ),
-    builder: (context) {
-      return Wrap(
-        children: const [PlaceAddPage()],
+    barrierDismissible: true,
+    barrierLabel: 'Label',
+    barrierColor: Colors.black.withOpacity(0.5),
+    builder: (BuildContext context) {
+      return AlertDialog(
+        content: SavePlacePage(
+          place: place,
+        ),
+        shape: const RoundedRectangleBorder(
+          borderRadius: BorderRadius.all(
+            Radius.circular(32.0),
+          ),
+        ),
       );
     },
   );
 }
 
-class PlaceAddPage extends StatefulWidget {
-  const PlaceAddPage({Key? key}) : super(key: key);
-
-  @override
-  State<PlaceAddPage> createState() => _PlaceAddPageState();
+class SavePlaceOutput {
+  // add things here
 }
 
-class _PlaceAddPageState extends State<PlaceAddPage> {
+class SavePlacePage extends StatefulWidget {
+  const SavePlacePage({Key? key, this.place}) : super(key: key);
+
+  final Place? place;
+
+  @override
+  State<SavePlacePage> createState() => _SavePlacePageState();
+}
+
+class _SavePlacePageState extends State<SavePlacePage> {
   PlaceAddCubit? _cubit;
   TextEditingController? _nameTextCtrl;
   TextEditingController? _directionTextCtrl;
@@ -40,8 +54,14 @@ class _PlaceAddPageState extends State<PlaceAddPage> {
   void initState() {
     super.initState();
     _cubit = getIt<PlaceAddCubit>();
-    _nameTextCtrl = TextEditingController();
-    _directionTextCtrl = TextEditingController();
+    _nameTextCtrl = TextEditingController()
+      ..addListener(() {
+        _cubit!.onNameChanged(_nameTextCtrl?.text ?? '');
+      });
+    _directionTextCtrl = TextEditingController()
+      ..addListener(() {
+        _cubit!.onDirectionChanged(_directionTextCtrl?.text ?? '');
+      });
   }
 
   @override
@@ -55,77 +75,66 @@ class _PlaceAddPageState extends State<PlaceAddPage> {
 
   @override
   Widget build(BuildContext context) {
-    return BlocProvider<PlaceAddCubit>(
-      create: (context) => _cubit!..initialize(),
-      child: BlocListener<PlaceAddCubit, PlaceAddState>(
-        listener: (context, state) {
-          if (state is PlaceAddSuccessState) {
-            Navigator.of(context).pop();
-          }
+    return SizedBox(
+      width: MediaQuery.of(context).size.width / 4,
+      child: BlocProvider<PlaceAddCubit>(
+        create: (context) => _cubit!..initialize(),
+        child: BlocListener<PlaceAddCubit, PlaceAddState>(
+          listener: (context, state) {
+            if (state is PlaceAddSuccessState) {
+              Navigator.of(context).pop();
+            }
 
-          if (state is PlaceAddErrorState) {
-            ScaffoldMessenger.of(context)
-                .showSnackBar(SnackBar(content: Text('Error ${state.e}')));
-          }
-        },
-        child: Stack(
-          children: [
-            Row(
+            if (state is PlaceAddErrorState) {
+              ScaffoldMessenger.of(context)
+                  .showSnackBar(SnackBar(content: Text('Error ${state.e}')));
+            }
+          },
+          child: Container(
+            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 16),
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              crossAxisAlignment: CrossAxisAlignment.center,
+              mainAxisSize: MainAxisSize.min,
               children: [
-                IconButton(
-                  padding: const EdgeInsets.all(16),
-                  onPressed: () => Navigator.of(context).pop(),
-                  icon: const Icon(Icons.close),
-                ),
-                const Expanded(
-                  child: Center(
-                    child: Text('Add a new place'),
-                  ),
-                ),
+                _title(),
+                const SizedBox(height: 16),
+                _nameTextField(),
+                const SizedBox(height: 16),
+                _directionTextField(),
+                const SizedBox(height: 16),
+                _foodsSelection(),
+                const SizedBox(height: 16),
+                _confirmBtn(),
               ],
             ),
-            Padding(
-              padding: const EdgeInsets.only(
-                  bottom: 90, left: 16, right: 16, top: 48),
-              child: Container(
-                constraints: const BoxConstraints(minHeight: 320),
-                child: Column(
-                  mainAxisSize: MainAxisSize.min,
-                  children: [
-                    _nameTextField(),
-                    const SizedBox(height: 16),
-                    _directionTextField(),
-                    const SizedBox(height: 16),
-                    _foodsSelection(),
-                    const SizedBox(height: 16),
-                  ],
-                ),
-              ),
-            ),
-            Positioned(bottom: 16, child: _confirmBtn()),
-          ],
+          ),
         ),
       ),
     );
   }
 
+  Text _title() {
+    return Text(
+      widget.place == null
+          ? 'Create new place'
+          : 'Edit [${widget.place?.name}]',
+      style: const TextStyle(
+          fontFamily: 'OpenSans', fontSize: 22, color: colorFa6d85),
+    );
+  }
+
   Widget _nameTextField() {
-    return TextField(
-      onChanged: _cubit!.onNameChanged,
-      decoration: const InputDecoration(
-        hintText: 'Place name',
-      ),
-      controller: _nameTextCtrl,
+    return PrimaryInput(
+      hint: 'Place name',
+      textEditingController: _nameTextCtrl,
     );
   }
 
   Widget _directionTextField() {
-    return TextField(
-      onChanged: _cubit!.onDirectionChanged,
-      decoration: const InputDecoration(
-        hintText: 'Direction to the place',
-      ),
-      controller: _directionTextCtrl,
+    return PrimaryInput(
+      hint: 'Direction to the place',
+      textEditingController: _directionTextCtrl,
     );
   }
 
@@ -142,16 +151,11 @@ class _PlaceAddPageState extends State<PlaceAddPage> {
   }
 
   Widget _confirmBtn() {
-    return Container(
-      margin: const EdgeInsets.symmetric(horizontal: 16),
-      height: 48,
-      width: MediaQuery.of(context).size.width,
-      child: TextButton(
-        onPressed: () {
-          _cubit!.addPlace();
-        },
-        child: const Text('Confirm'),
-      ),
+    return PrimaryButton(
+      text: 'Confirm',
+      onPressed: () {
+        _cubit!.addPlace();
+      },
     );
   }
 }

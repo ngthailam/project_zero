@@ -23,6 +23,22 @@ class Place extends Equatable {
     this.foods = const {},
   });
 
+  int get getAvgRating {
+    int rating = -1;
+    int count = 0;
+
+    reviews.forEach((key, value) {
+      if ((value.rating ?? 0) > 0) {
+        count++;
+        rating += value.rating!;
+      }
+    });
+
+    if (count == 0) return rating;
+
+    return rating ~/ count;
+  }
+
   factory Place.empty() =>
       Place(id: generateRandomUuid(), name: '', direction: '');
 

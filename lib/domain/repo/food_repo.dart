@@ -5,7 +5,12 @@ import 'package:de1_mobile_friends/domain/model/occasion.dart';
 abstract class FoodRepo {
   Future<List<Food>> getAllFoods();
 
-  Future<bool> addFood(String foodName, {FoodType? type, Occasion? occasion});
+  Future<bool> addFood(
+    String foodName, {
+    String? id,
+    FoodType? type,
+    Occasion? occasion,
+  });
 
   Stream<List<Food>> observeAllFoods();
 

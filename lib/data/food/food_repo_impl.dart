@@ -52,10 +52,11 @@ class FoodRepoImpl extends FoodRepo {
     String foodName, {
     FoodType? type,
     Occasion? occasion,
+    String? id,
   }) async {
     Occasion foodOccasion = occasion ?? await _occasionRepo.getOccasions();
     final food = Food(
-      id: generateRandomUuid(),
+      id: id ?? generateRandomUuid(),
       name: foodName,
       type: type ?? FoodType(),
       occasion: foodOccasion.occasions,
