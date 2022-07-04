@@ -3,6 +3,7 @@ import 'dart:math';
 import 'package:de1_mobile_friends/domain/model/food.dart';
 import 'package:de1_mobile_friends/presentation/page/home/bloc/home_cubit.dart';
 import 'package:de1_mobile_friends/presentation/page/home/bloc/home_state.dart';
+import 'package:de1_mobile_friends/presentation/utils/constants.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
@@ -51,7 +52,14 @@ class _FoodWheelState extends State<FoodWheel> {
         final foods = state.displayedFoods;
         if (foods?.isNotEmpty == true) {
           _pageController = PageController(
-              viewportFraction: 0.3, initialPage: foods!.length ~/ 2);
+            viewportFraction: getOnScreenSize<double>(
+              context,
+              small: 0.7,
+              medium: 0.4,
+              large: 0.2,
+            ),
+            initialPage: foods!.length ~/ 2,
+          );
 
           return GestureDetector(
             onTap: () {
@@ -135,8 +143,9 @@ class _FoodWheelState extends State<FoodWheel> {
       padding: const EdgeInsets.all(16),
       margin: const EdgeInsets.all(16),
       decoration: BoxDecoration(
+          color: Colors.white,
           borderRadius: BorderRadius.circular(8),
-          border: Border.all(color: Colors.blue, width: 4)),
+          border: Border.all(color: const Color(0xFF093684), width: 4)),
       key: ValueKey('Front-${item.id}-$index'),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.center,
@@ -157,16 +166,16 @@ class _FoodWheelState extends State<FoodWheel> {
             hoverColor: Colors.transparent,
             splashColor: Colors.transparent,
             onTap: () {
-              ScaffoldMessenger.of(context)
-                  .showSnackBar(SnackBar(content: Text('Comming soon...')));
+              ScaffoldMessenger.of(context).showSnackBar(
+                  const SnackBar(content: Text('Comming soon...')));
             },
-            child: Text(
+            child: const Text(
               'Places that sell this',
               textAlign: TextAlign.center,
               style: TextStyle(
                   fontFamily: 'OpenSans',
                   fontWeight: FontWeight.bold,
-                  color: Colors.blue.shade400,
+                  color: Color(0xFF093684),
                   fontSize: 18),
             ),
           )

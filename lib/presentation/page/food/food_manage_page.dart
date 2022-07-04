@@ -1,6 +1,10 @@
+import 'package:de1_mobile_friends/domain/model/food.dart';
 import 'package:de1_mobile_friends/main.dart';
 import 'package:de1_mobile_friends/presentation/page/food/food_manage_cubit.dart';
 import 'package:de1_mobile_friends/presentation/page/food/food_manage_state.dart';
+import 'package:de1_mobile_friends/presentation/page/food/widgets/create_food_dialog.dart';
+import 'package:de1_mobile_friends/presentation/utils/colors.dart';
+import 'package:expandable/expandable.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -37,13 +41,33 @@ class _FoodManagePageState extends State<FoodManagePage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: Colors.transparent,
       body: BlocProvider<FoodManageCubit>(
-        create: (context) => _cubit!..initialize(),
-        child: Row(
-          children: [
-            Expanded(child: _foodList()),
-            Expanded(child: _addFood()),
-          ],
+          create: (context) => _cubit!..initialize(),
+          child: Stack(
+            children: [
+              _foodList(),
+              _createFoodFab(context),
+            ],
+          )),
+    );
+  }
+
+  Widget _createFoodFab(BuildContext context) {
+    return Positioned(
+      bottom: 16,
+      right: 16,
+      child: FloatingActionButton(
+        backgroundColor: colorFa6d85,
+        onPressed: () async {
+          final data = await showCreateFoodDialog(context);
+          if (data != null) {
+            _cubit?.addFood(data.foodName);
+          }
+        },
+        child: const Icon(
+          Icons.add,
+          color: Colors.white,
         ),
       ),
     );
@@ -70,37 +94,7 @@ class _FoodManagePageState extends State<FoodManagePage> {
             itemBuilder: (context, i) {
               final item = list[i];
               final double topMargin = i == 0 ? 18 : 4;
-              return Container(
-                margin: EdgeInsets.only(
-                  top: topMargin,
-                  left: 32,
-                  right: 32,
-                  bottom: 4,
-                ),
-                decoration: BoxDecoration(
-                    color: Colors.white,
-                    border: Border.all(
-                      color: Colors.grey,
-                      style: BorderStyle.solid,
-                      width: 1.0,
-                    )),
-                padding: const EdgeInsets.all(16),
-                child: Row(
-                  children: [
-                    Expanded(child: Text(item.name)),
-                    _occasion(item.occasion),
-                    IconButton(
-                        onPressed: () {
-                          _cubit?.deleteFood(item.id);
-                        },
-                        icon: const Icon(
-                          Icons.delete,
-                          size: 24,
-                          color: Colors.grey,
-                        ))
-                  ],
-                ),
-              );
+              return _FoodItem(topMargin: topMargin, item: item, cubit: _cubit);
             },
             itemCount: list.length,
           );
@@ -118,130 +112,155 @@ class _FoodManagePageState extends State<FoodManagePage> {
       },
     );
   }
+}
 
-  Widget _addFood() {
-    return Align(
-      alignment: Alignment.topCenter,
-      child: Container(
-        padding: const EdgeInsets.symmetric(vertical: 16, horizontal: 32),
-        margin: const EdgeInsets.all(16),
-        decoration: BoxDecoration(
-          border: Border.all(
-            color: Colors.grey,
-            style: BorderStyle.solid,
-            width: 1.0,
-          ),
-          color: Colors.white,
-          borderRadius: BorderRadius.circular(16),
-          boxShadow: const [
-            BoxShadow(
-              color: Colors.grey,
-              offset: Offset(0.0, 1.0), //(x,y)
-              blurRadius: 1.0,
+class _FoodItem extends StatelessWidget {
+  _FoodItem({
+    Key? key,
+    required this.topMargin,
+    required this.item,
+    required FoodManageCubit? cubit,
+  })  : _cubit = cubit,
+        super(key: key);
+
+  final double topMargin;
+  final Food item;
+  final FoodManageCubit? _cubit;
+
+  final ExpandableController _controller =
+      ExpandableController(initialExpanded: false);
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      margin: EdgeInsets.only(
+        top: topMargin,
+        left: 32,
+        right: 32,
+        bottom: 8,
+      ),
+      decoration: BoxDecoration(
+        color: Colors.white,
+        border: Border.all(
+          color: Colors.grey,
+          style: BorderStyle.solid,
+          width: 1.0,
+        ),
+      ),
+      padding: const EdgeInsets.all(16),
+      child: InkWell(
+          onTap: () {
+            _controller.toggle();
+          },
+          child: Column(
+            children: [
+              _header(context),
+              ExpandableNotifier(
+                controller: _controller,
+                child: Expandable(
+                  collapsed: const SizedBox(
+                    height: 1,
+                    width: double.infinity,
+                  ),
+                  expanded: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      const SizedBox(height: 16),
+                      Text(
+                        'Places that sell this food:',
+                        style: TextStyle(
+                          fontFamily: 'OpenSans',
+                          fontSize: 16,
+                          color: Colors.black.withOpacity(0.6),
+                          fontWeight: FontWeight.w400,
+                        ),
+                      ),
+                      _places(),
+                    ],
+                  ),
+                ),
+              ),
+            ],
+          )),
+    );
+  }
+
+  Widget _places() {
+    return ListView.builder(
+      shrinkWrap: true,
+      itemCount: item.places.keys.length + 1,
+      itemBuilder: (context, i) {
+        if (i == item.places.keys.length) {
+          return _addPlaceBtn();
+        }
+        return Container();
+      },
+    );
+  }
+
+  Widget _addPlaceBtn() {
+    return InkWell(
+      onTap: () {
+        // Add a place
+      },
+      child: Padding(
+        padding: const EdgeInsets.all(8).copyWith(left: 0),
+        child: Row(
+          children: const [
+            Icon(
+              Icons.add_circle_outline_outlined,
+              color: colorFa6d85,
+            ),
+            SizedBox(width: 8),
+            Text(
+              'Add a place',
+              style: TextStyle(
+                  color: colorFa6d85, fontSize: 14, fontFamily: 'OpenSans'),
             ),
           ],
         ),
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            const Text("Create new food"),
-            const SizedBox(height: 16),
-            _nameInput(),
-            const SizedBox(height: 16),
-            // Commented due to Issue#50
-            // const Text("Choose food type"),
-            // const SizedBox(height: 8),
-            _foodTypes(),
-            const SizedBox(height: 16),
-            _occasionPicker(),
-            const SizedBox(height: 16),
-            _confirmBtn(),
-          ],
-        ),
       ),
     );
   }
 
-  Widget _foodTypes() {
-    return const SizedBox.shrink();
-    // Commented due to Issue#50
-    // return FoodTypePicker(
-    //   onChangedType: (type) => _cubit?.onChangedType(type),
-    // );
-  }
-
-  Widget _occasionPicker() {
-    return BlocBuilder<FoodManageCubit, FoodManageState>(
-        buildWhen: (previous, current) {
-      return previous.occasion != current.occasion;
-    }, builder: (context, state) {
-      if (state.occasion?.occasions.isNotEmpty != true) {
-        return const SizedBox.shrink();
-      }
-
-      // TODO: remove this
-      return Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: const [
-          Text('Pick on what occasion can you eat this ?'),
-          SizedBox(height: 8),
-        ],
-      );
-    });
-  }
-
-  Widget _confirmBtn() {
-    return SizedBox(
-      width: double.infinity,
-      child: TextButton(
-        style: ButtonStyle(
-          padding: MaterialStateProperty.all(
-              const EdgeInsets.symmetric(horizontal: 32, vertical: 16)),
-          backgroundColor: MaterialStateProperty.all(Colors.blue[500]),
+  Widget _header(BuildContext context) {
+    return Row(
+      children: [
+        Expanded(
+          child: Text(
+            item.name,
+            style: const TextStyle(
+              fontFamily: 'OpenSans',
+              fontSize: 16,
+              fontWeight: FontWeight.w600,
+            ),
+          ),
         ),
-        onPressed: () {
-          _cubit?.addFood(_createTextEdtCtrl?.text);
-          _createTextEdtCtrl?.text = '';
-        },
-        child: const Text(
-          "Create",
-          style: TextStyle(color: Colors.white),
+        IconButton(
+          onPressed: () async {
+            final data = await showCreateFoodDialog(context, food: item);
+            if (data != null) {
+              _cubit?.editFood(data.id, data.foodName);
+            }
+          },
+          icon: const Icon(
+            Icons.edit,
+            size: 24,
+            color: Colors.grey,
+          ),
         ),
-      ),
+        const SizedBox(width: 16),
+        IconButton(
+          onPressed: () {
+            _cubit?.deleteFood(item.id);
+          },
+          icon: const Icon(
+            Icons.delete,
+            size: 24,
+            color: Colors.grey,
+          ),
+        )
+      ],
     );
-  }
-
-  Widget _nameInput() {
-    return SizedBox(
-      width: double.infinity,
-      child: TextField(
-        focusNode: _createTextFocusNode,
-        onSubmitted: (text) {
-          if (_createTextEdtCtrl?.text.isNotEmpty != true) {
-            return;
-          }
-          _cubit?.addFood(text.trim());
-          _createTextEdtCtrl?.text = '';
-          _createTextFocusNode?.requestFocus();
-        },
-        controller: _createTextEdtCtrl,
-        decoration: const InputDecoration(hintText: "Food name"),
-      ),
-    );
-  }
-
-  Widget _occasion(Map<String, dynamic>? occasion) {
-    if (occasion?.isNotEmpty != true) return const SizedBox.shrink();
-
-    var text = '';
-
-    occasion!.forEach((key, value) {
-      if (value.toString() == true.toString()) {
-        text += '${text.isEmpty ? '' : ', '} $key';
-      }
-    });
-
-    return Text(text);
   }
 }

@@ -56,6 +56,27 @@ class FoodManageCubit extends Cubit<FoodManageState> {
     final result = await _addFoodInteractor.execute(input);
     if (result.isSuccess()) {
       // Do nothing, already observe results
+      // TODO: should show success dialog or smt here
+    } else {
+      // emit(FoodManageErrorState(result.exception!));
+    }
+  }
+
+  void editFood(String? id, String foodName) async {
+    if (foodName.isEmpty) {
+      return;
+    }
+
+    final input = AddFoodInput(
+      id: id,
+      name: foodName,
+      type: _currentFoodType,
+      occasion: state.occasion,
+    );
+    final result = await _addFoodInteractor.execute(input);
+    if (result.isSuccess()) {
+      // Do nothing, already observe results
+      // TODO: should show success dialog or smt here
     } else {
       // emit(FoodManageErrorState(result.exception!));
     }

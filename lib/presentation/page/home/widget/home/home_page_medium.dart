@@ -115,7 +115,7 @@ class _HomePageMediumState extends State<HomePageMedium> {
           return DropdownMenuItem(
             value: e,
             child: Text(
-              state.occasions!.occasions![e] ?? '',
+              state.occasions!.occasions[e] ?? '',
               style: _occasionTextStyle.copyWith(
                 color: Colors.black,
                 fontSize: 18,
@@ -133,7 +133,7 @@ class _HomePageMediumState extends State<HomePageMedium> {
         fontFamily: 'OpenSans',
         fontSize: 24,
         fontWeight: FontWeight.bold,
-        color: Colors.green,
+        color: Color(0xFF093684),
       );
 
   Widget _spinner() {

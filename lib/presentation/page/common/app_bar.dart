@@ -22,6 +22,7 @@ class _CustomAppBarState extends State<CustomAppBar> {
   Widget build(BuildContext context) {
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 16),
+      margin: const EdgeInsets.only(top: 16),
       color: Colors.white,
       child: Row(
         children: [
@@ -43,6 +44,7 @@ class _CustomAppBarState extends State<CustomAppBar> {
   }
 
   Widget _item(int index) {
+    final isHighlighted = _selectedIndex == index || _hoveredIndex == index;
     return InkWell(
       onHover: (isHovered) {
         if (isHovered && _hoveredIndex != index) {
@@ -68,16 +70,13 @@ class _CustomAppBarState extends State<CustomAppBar> {
       },
       child: Padding(
         padding: const EdgeInsets.symmetric(horizontal: 36),
-        child: Text(
-          appBarItems[index],
-          style: TextStyle(
-            fontFamily: 'OpenSans',
-            fontSize: 16,
-            fontWeight: _selectedIndex == index || _hoveredIndex == index
-                ? FontWeight.bold
-                : FontWeight.w500,
-          ),
-        ),
+        child: Text(appBarItems[index],
+            style: TextStyle(
+              fontFamily: 'OpenSans',
+              fontSize: 16,
+              fontWeight: isHighlighted ? FontWeight.bold : FontWeight.w500,
+              color: isHighlighted ? const Color(0xFFfa6d85) : Colors.black,
+            )),
       ),
     );
   }

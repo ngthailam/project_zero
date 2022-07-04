@@ -6,7 +6,10 @@ import 'package:de1_mobile_friends/main.dart';
 import 'package:de1_mobile_friends/presentation/page/place/place_cubit.dart';
 import 'package:de1_mobile_friends/presentation/page/place/place_state.dart';
 import 'package:de1_mobile_friends/presentation/page/place_add/place_add_page.dart';
+import 'package:de1_mobile_friends/presentation/utils/colors.dart';
+import 'package:de1_mobile_friends/presentation/utils/constants.dart';
 import 'package:de1_mobile_friends/presentation/widget/search_text_field.dart';
+import 'package:de1_mobile_friends/utils/string_ext.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
@@ -36,18 +39,19 @@ class _PlacePageState extends State<PlacePage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: Colors.transparent,
       body: BlocProvider<PlaceCubit>(
           create: (context) => _cubit!..initialze(),
           child: Stack(
             children: [
-              _list(),
-              _fab(),
+              _places(),
+              _createPlaceFab(),
             ],
           )),
     );
   }
 
-  Widget _list() {
+  Widget _places() {
     return BlocConsumer<PlaceCubit, PlaceState>(
       listener: (context, state) {
         if (state is PlaceErrorState) {
@@ -63,11 +67,24 @@ class _PlacePageState extends State<PlacePage> {
           return const SizedBox.shrink();
         }
 
-        return ListView.builder(
-          itemCount: places!.length,
-          itemBuilder: (context, i) {
-            return _placeItem(places[i], i);
-          },
+        return Padding(
+          padding: EdgeInsets.all(isMobile(context) ? 16 : 48),
+          child: GridView.builder(
+            itemCount: places!.length,
+            gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+              crossAxisSpacing: 16,
+              mainAxisSpacing: 16,
+              crossAxisCount: getOnScreenSize<int>(
+                context,
+                small: 2,
+                medium: 3,
+                large: 4,
+              ), // TODO: add more width handling here
+            ),
+            itemBuilder: (context, i) {
+              return _placeItem(places[i], i);
+            },
+          ),
         );
       },
     );
@@ -76,21 +93,21 @@ class _PlacePageState extends State<PlacePage> {
   Widget _placeItem(Place place, int i) {
     return _PlaceItem(
       place: place,
-      topMargin: i == 0 ? 18 : 4,
     );
   }
 
-  Widget _fab() {
+  Widget _createPlaceFab() {
     return Positioned(
       bottom: 32,
       right: 32,
       child: FloatingActionButton(
+        backgroundColor: colorFa6d85,
         child: const Icon(
           Icons.add,
           color: Colors.white,
         ),
         onPressed: () {
-          showAddPlaceBottomSheet(context);
+          showSavePlaceDialog(context);
         },
       ),
     );
@@ -101,39 +118,43 @@ class _PlaceItem extends StatelessWidget {
   const _PlaceItem({
     Key? key,
     required this.place,
-    required this.topMargin,
   }) : super(key: key);
 
   final Place place;
-  final double topMargin;
 
   @override
   Widget build(BuildContext context) {
-    return GestureDetector(
+    return InkWell(
       onTap: () {
         Navigator.of(context)
             .pushNamed(AppRouter.placeDetail, arguments: place.id);
       },
       child: Container(
-        margin: EdgeInsets.only(
-          top: topMargin,
-          left: 32,
-          right: 32,
-          bottom: 4,
-        ),
         decoration: BoxDecoration(
-            color: Colors.white,
-            border: Border.all(
-              color: Colors.grey,
-              style: BorderStyle.solid,
-              width: 1.0,
-            )),
+          color: Colors.white,
+          border: Border.all(
+            color: Colors.grey,
+            style: BorderStyle.solid,
+            width: 1.0,
+          ),
+        ),
         padding: const EdgeInsets.all(16),
         child: SizedBox(
           child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               _header(context),
-              _addFood(context),
+              _direction(),
+              const SizedBox(height: 8),
+              _ratings(),
+              const SizedBox(height: 16),
+              const Text(
+                'Foods in this place:',
+                style: TextStyle(
+                  fontWeight: FontWeight.bold,
+                ),
+              ),
+              const SizedBox(height: 8),
               _foods(),
             ],
           ),
@@ -145,7 +166,17 @@ class _PlaceItem extends StatelessWidget {
   Widget _header(BuildContext context) {
     return Row(
       children: [
-        Expanded(child: Text(place.name)),
+        Expanded(
+          child: Text(
+            place.name.capitalize(),
+            style: const TextStyle(
+              fontFamily: 'OpenSans',
+              fontWeight: FontWeight.bold,
+              fontSize: 18,
+            ),
+          ),
+        ),
+        const SizedBox(width: 16),
         IconButton(
           onPressed: () {
             context.read<PlaceCubit>().deletePlace(place.id);
@@ -160,27 +191,69 @@ class _PlaceItem extends StatelessWidget {
     );
   }
 
-  Widget _addFood(BuildContext context) {
+  Widget _direction() {
+    return Text(
+      place.direction?.isNotEmpty == true
+          ? place.direction!
+          : '(No directions)',
+      style: TextStyle(
+          fontFamily: 'OpenSans',
+          fontWeight: FontWeight.w400,
+          fontSize: 16,
+          color: Colors.black.withOpacity(0.7)),
+    );
+  }
+
+  Widget _ratings() {
+    final rating = place.getAvgRating;
     return Row(
       children: [
-        TextButton(
-          onPressed: () async {
-            final selectedFood = await showFoodSearchDialog(context);
-            context
-                .read<PlaceCubit>()
-                .addFoodInPlace(placeId: place.id, food: selectedFood);
-          },
-          child: const Text('Add food'),
-        ),
+        for (var i = 0; i < 5; i++)
+          Icon(
+            Icons.star_rate,
+            color: i <= rating ? Colors.amber : Colors.grey,
+          ),
       ],
     );
   }
 
+  Widget _addFoodsBtn() {
+    return InkWell(
+      onTap: () {
+        // Add a place
+      },
+      child: Padding(
+        padding: const EdgeInsets.all(8).copyWith(left: 0),
+        child: Row(
+          children: const [
+            Icon(
+              Icons.add_circle_outline_outlined,
+              color: colorFa6d85,
+            ),
+            SizedBox(width: 8),
+            Text(
+              'Add a food',
+              style: TextStyle(
+                  color: colorFa6d85, fontSize: 14, fontFamily: 'OpenSans'),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
   Widget _foods() {
-    return Row(
-      children: place.foods.keys.map((e) {
-        return Text("$e, ");
-      }).toList(),
+    return Expanded(
+      child: ListView.builder(
+        itemCount: place.foods.keys.length + 1,
+        itemBuilder: (context, i) {
+          if (i == 0) {
+            return _addFoodsBtn();
+          }
+
+          return Text(place.foods.keys.toList()[i - 1]);
+        },
+      ),
     );
   }
 }

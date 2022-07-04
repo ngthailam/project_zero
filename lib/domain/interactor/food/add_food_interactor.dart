@@ -3,6 +3,7 @@ import 'package:de1_mobile_friends/domain/model/either.dart';
 import 'package:de1_mobile_friends/domain/model/food_type.dart';
 import 'package:de1_mobile_friends/domain/model/occasion.dart';
 import 'package:de1_mobile_friends/domain/repo/food_repo.dart';
+import 'package:de1_mobile_friends/utils/string_ext.dart';
 import 'package:injectable/injectable.dart';
 
 @injectable
@@ -16,7 +17,8 @@ class AddFoodInteractor
   Future<Either<bool, Exception>> execute(AddFoodInput input) async {
     try {
       final result = await _foodRepo.addFood(
-        input.name,
+        input.name.trim().capitalize(),
+        id: input.id,
         type: input.type,
         occasion: input.occasion,
       );
@@ -28,9 +30,10 @@ class AddFoodInteractor
 }
 
 class AddFoodInput {
+  final String? id;
   final String name;
   final FoodType? type;
   final Occasion? occasion;
 
-  AddFoodInput({required this.name, this.type, this.occasion});
+  AddFoodInput({this.id, required this.name, this.type, this.occasion});
 }

@@ -55,6 +55,7 @@ class HomeCubit extends Cubit<HomeState> {
     _foodStreamSubscription?.cancel();
   }
 
+  // ignore: unused_element
   void _emitFoodListWithFilter({Occasion? occasion}) {
     // prepare filter that is false
     // Map<String, bool> falseOnlyMap = {};
