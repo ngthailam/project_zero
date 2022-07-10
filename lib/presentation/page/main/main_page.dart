@@ -26,7 +26,7 @@ class _MainPageState extends State<MainPage> {
           CustomAppBar(
             onAppBarItemTap: (int index) {
               _pageController.animateToPage(index,
-                  duration: const Duration(milliseconds: 500),
+                  duration: const Duration(milliseconds: 400),
                   curve: Curves.easeInOut);
             },
           ),

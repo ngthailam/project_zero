@@ -3,7 +3,6 @@ import 'dart:math';
 import 'package:de1_mobile_friends/domain/model/food.dart';
 import 'package:de1_mobile_friends/presentation/page/home/bloc/home_cubit.dart';
 import 'package:de1_mobile_friends/presentation/page/home/bloc/home_state.dart';
-import 'package:de1_mobile_friends/presentation/utils/constants.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
@@ -52,12 +51,7 @@ class _FoodWheelState extends State<FoodWheel> {
         final foods = state.displayedFoods;
         if (foods?.isNotEmpty == true) {
           _pageController = PageController(
-            viewportFraction: getOnScreenSize<double>(
-              context,
-              small: 0.7,
-              medium: 0.4,
-              large: 0.2,
-            ),
+            viewportFraction: 1 / (MediaQuery.of(context).size.width / 360),
             initialPage: foods!.length ~/ 2,
           );
 
