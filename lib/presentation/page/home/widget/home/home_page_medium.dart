@@ -1,6 +1,7 @@
 import 'package:de1_mobile_friends/presentation/page/home/bloc/home_cubit.dart';
 import 'package:de1_mobile_friends/presentation/page/home/bloc/home_state.dart';
 import 'package:de1_mobile_friends/presentation/page/home/widget/common/food_wheel.dart';
+import 'package:de1_mobile_friends/presentation/utils/constants.dart';
 import 'package:de1_mobile_friends/presentation/widget/slide_up_widget.dart';
 import 'package:dropdown_button2/dropdown_button2.dart';
 import 'package:flutter/material.dart';
@@ -59,19 +60,19 @@ class _HomePageMediumState extends State<HomePageMedium> {
       child: Row(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
-          const Text(
+          Text(
             'Welcome to ',
             style: TextStyle(
               fontFamily: 'OpenSans',
-              fontSize: 32,
+              fontSize: isMobile(context) ? 24 : 32,
               fontWeight: FontWeight.bold,
             ),
           ),
           const SizedBox(width: 16),
           Image.asset(
             'assets/img/logo.png',
-            height: 120,
-            width: 120,
+            height: isMobile(context) ? 80 : 120,
+            width: isMobile(context) ? 80 : 120,
           ),
         ],
       ),
@@ -84,11 +85,11 @@ class _HomePageMediumState extends State<HomePageMedium> {
       child: Row(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
-          const Text(
+          Text(
             'What\'s the occasion ?',
             style: TextStyle(
               fontFamily: 'OpenSans',
-              fontSize: 20,
+              fontSize: isMobile(context) ? 16 : 20,
               fontWeight: FontWeight.w400,
             ),
           ),

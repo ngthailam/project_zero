@@ -19,9 +19,7 @@ class PrimaryInput extends StatelessWidget {
 
   OutlineInputBorder get border => OutlineInputBorder(
         borderRadius: BorderRadius.circular(24.0),
-        borderSide: const BorderSide(
-          color: colorFa6d85,
-        ),
+        borderSide: const BorderSide(color: colorFa6d85),
       );
 
   @override

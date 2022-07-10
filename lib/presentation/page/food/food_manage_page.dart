@@ -5,6 +5,7 @@ import 'package:de1_mobile_friends/presentation/page/food/food_manage_cubit.dart
 import 'package:de1_mobile_friends/presentation/page/food/food_manage_state.dart';
 import 'package:de1_mobile_friends/presentation/page/food/widgets/create_food_dialog.dart';
 import 'package:de1_mobile_friends/presentation/utils/colors.dart';
+import 'package:de1_mobile_friends/presentation/utils/constants.dart';
 import 'package:de1_mobile_friends/utils/string_ext.dart';
 import 'package:expandable/expandable.dart';
 import 'package:flutter/cupertino.dart';
@@ -128,18 +129,19 @@ class _FoodManagePageState extends State<FoodManagePage>
                     mainAxisSize: MainAxisSize.min,
                     children: [
                       Padding(
-                          padding: const EdgeInsets.symmetric(horizontal: 8),
-                          child: Text(
-                            getCategoryTitle(e),
-                            style: const TextStyle(
-                                fontFamily: 'OpenSans',
-                                fontSize: 18,
-                                fontWeight: FontWeight.bold,
-                                color: colorFa6d85),
-                          )),
+                        padding: const EdgeInsets.symmetric(horizontal: 8),
+                        child: Text(
+                          getCategoryTitle(e),
+                          style: const TextStyle(
+                              fontFamily: 'OpenSans',
+                              fontSize: 18,
+                              fontWeight: FontWeight.bold,
+                              color: colorFa6d85),
+                        ),
+                      ),
                       const SizedBox(height: 8),
                       _foodsInACategory(foods),
-                      const SizedBox(height: 80),
+                      SizedBox(height: isMobile(context) ? 22 : 60),
                     ],
                   );
                 }).toList(),
@@ -175,11 +177,13 @@ class _FoodManagePageState extends State<FoodManagePage>
   }
 
   Widget _foodsInACategory(List<Food> foods) {
-    // TODO: define along with width threshold
-    final desiredWidth = (MediaQuery.of(context).size.width - 32) ~/ 5;
+    final divider =
+        getOnScreenSize(context, small: 2, medium: 4, large: 5, huge: 7);
+    int desiredWidth = (MediaQuery.of(context).size.width - 32) ~/ divider;
+
     return SizedBox(
-      // TODO: rethink this part
-      height: desiredWidth.toDouble() + 80,
+      height: desiredWidth.toDouble() +
+          getOnScreenSize(context, small: 82, medium: 78, large: 76, huge: 66),
       child: ListView.separated(
         separatorBuilder: (context, index) => const SizedBox(width: 16),
         scrollDirection: Axis.horizontal,

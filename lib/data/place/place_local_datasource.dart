@@ -22,7 +22,6 @@ class PlaceLocalDataSourceImpl extends PlaceLocalDataSource {
 
   List<Place> _currentPlaces = [];
 
-  // TODO: circular dependencies
   final FoodLocalDataSource _foodLocalDataSource;
 
   PlaceLocalDataSourceImpl(this._foodLocalDataSource);

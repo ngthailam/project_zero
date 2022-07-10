@@ -1,3 +1,4 @@
+import 'package:de1_mobile_friends/presentation/utils/constants.dart';
 import 'package:flutter/material.dart';
 
 const appBarItems = ['Home', 'Food', 'Place'];
@@ -22,7 +23,7 @@ class _CustomAppBarState extends State<CustomAppBar> {
   Widget build(BuildContext context) {
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 16),
-      margin: const EdgeInsets.only(top: 16),
+      margin: EdgeInsets.only(top: isMobile(context) ? 8 : 16),
       color: Colors.white,
       child: Row(
         children: [
@@ -69,7 +70,7 @@ class _CustomAppBarState extends State<CustomAppBar> {
         }
       },
       child: Padding(
-        padding: const EdgeInsets.symmetric(horizontal: 36),
+        padding: EdgeInsets.symmetric(horizontal: isMobile(context) ? 16 : 36),
         child: Text(appBarItems[index],
             style: TextStyle(
               fontFamily: 'OpenSans',

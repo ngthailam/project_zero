@@ -149,7 +149,7 @@ class _AddPlaceInFoodPageState extends State<AddPlaceInFoodPage> {
               return const Text('No matching results');
             }
             return SizedBox(
-              height: isMobile(context) ? 120 : 240,
+              height: isMobile(context) ? 200 : 360,
               child: ListView.builder(
                 itemCount: places.length,
                 itemBuilder: (context, i) {
