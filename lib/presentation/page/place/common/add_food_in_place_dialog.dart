@@ -147,7 +147,7 @@ class _AddFoodInPlaceState extends State<AddFoodInPlace> {
             if (foods == null) return const CupertinoActivityIndicator();
             if (foods.isEmpty == true) return const Text('No matching results');
             return SizedBox(
-              height: isMobile(context) ? 120 : 240,
+              height: isMobile(context) ? 200 : 360,
               child: ListView.builder(
                 itemCount: foods.length,
                 itemBuilder: (context, i) {

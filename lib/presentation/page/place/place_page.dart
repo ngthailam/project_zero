@@ -78,13 +78,15 @@ class _PlacePageState extends State<PlacePage> {
               mainAxisSpacing: 16,
               crossAxisCount: getOnScreenSize<int>(
                 context,
-                small: 2,
+                small: 1,
                 medium: 3,
                 large: 4,
-              ), // TODO: add more width handling here
+              ),
             ),
             itemBuilder: (context, i) {
-              return _placeItem(places[i], i);
+              return _PlaceItem(
+                place: places[i],
+              );
             },
           ),
         );
@@ -92,16 +94,10 @@ class _PlacePageState extends State<PlacePage> {
     );
   }
 
-  Widget _placeItem(Place place, int i) {
-    return _PlaceItem(
-      place: place,
-    );
-  }
-
   Widget _createPlaceFab() {
     return Positioned(
-      bottom: 32,
-      right: 32,
+      bottom: 16,
+      right: 16,
       child: FloatingActionButton(
         backgroundColor: colorFa6d85,
         child: const Icon(
