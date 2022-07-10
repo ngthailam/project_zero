@@ -28,6 +28,9 @@ abstract class PlaceRemoteDataSource {
     required String foodId,
     required String placeId,
   });
+
+  Future<bool> deleteFoodInPlace(
+      {required String foodId, required String placeId});
 }
 
 @Injectable(as: PlaceRemoteDataSource)
@@ -85,6 +88,21 @@ class PlaceRemoteDataSourceImpl extends PlaceRemoteDataSource {
           "${PlaceFirebaseKey.main}/$placeId/${PlaceFirebaseKey.foods}";
       DatabaseReference ref = firebase.ref(refPath);
       ref.update({foodId: true});
+      return true;
+    } on Exception catch (_) {
+      return false;
+    }
+  }
+
+  @override
+  Future<bool> deleteFoodInPlace(
+      {required String foodId, required String placeId}) async {
+    try {
+      FirebaseDatabase firebase = FirebaseDatabase.instance;
+      final refPath =
+          "${PlaceFirebaseKey.main}/$placeId/${PlaceFirebaseKey.foods}/$foodId";
+      DatabaseReference ref = firebase.ref(refPath);
+      await ref.remove();
       return true;
     } on Exception catch (_) {
       return false;

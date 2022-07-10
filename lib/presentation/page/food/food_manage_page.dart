@@ -1,12 +1,15 @@
 import 'package:de1_mobile_friends/domain/model/food.dart';
 import 'package:de1_mobile_friends/main.dart';
+import 'package:de1_mobile_friends/presentation/page/food/common/add_place_in_food_dialog.dart';
 import 'package:de1_mobile_friends/presentation/page/food/food_manage_cubit.dart';
 import 'package:de1_mobile_friends/presentation/page/food/food_manage_state.dart';
 import 'package:de1_mobile_friends/presentation/page/food/widgets/create_food_dialog.dart';
 import 'package:de1_mobile_friends/presentation/utils/colors.dart';
+import 'package:de1_mobile_friends/utils/string_ext.dart';
 import 'package:expandable/expandable.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/scheduler.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
 class FoodManagePage extends StatefulWidget {
@@ -16,7 +19,8 @@ class FoodManagePage extends StatefulWidget {
   State<FoodManagePage> createState() => _FoodManagePageState();
 }
 
-class _FoodManagePageState extends State<FoodManagePage> {
+class _FoodManagePageState extends State<FoodManagePage>
+    with AutomaticKeepAliveClientMixin {
   FoodManageCubit? _cubit;
 
   TextEditingController? _createTextEdtCtrl;
@@ -27,6 +31,11 @@ class _FoodManagePageState extends State<FoodManagePage> {
     _cubit = getIt<FoodManageCubit>();
     _createTextEdtCtrl = TextEditingController();
     _createTextFocusNode = FocusNode();
+    SchedulerBinding.instance.addPostFrameCallback((timeStamp) {
+      Future.delayed(const Duration(milliseconds: 330), () {
+        _cubit?.initialize();
+      });
+    });
     super.initState();
   }
 
@@ -40,15 +49,32 @@ class _FoodManagePageState extends State<FoodManagePage> {
 
   @override
   Widget build(BuildContext context) {
+    super.build(context);
     return Scaffold(
       backgroundColor: Colors.transparent,
       body: BlocProvider<FoodManageCubit>(
-          create: (context) => _cubit!..initialize(),
-          child: Stack(
-            children: [
-              _foodList(),
-              _createFoodFab(context),
-            ],
+          create: (context) => _cubit!,
+          child: BlocBuilder<FoodManageCubit, FoodManageState>(
+            buildWhen: (previous, current) {
+              return previous.foodInCategories != current.foodInCategories;
+            },
+            builder: (context, state) {
+              if (state.foodInCategories.isEmpty) {
+                return const Center(
+                  child: CupertinoActivityIndicator(),
+                );
+              }
+              return SizedBox(
+                width: double.infinity,
+                height: double.infinity,
+                child: Stack(
+                  children: [
+                    _foodList(),
+                    _createFoodFab(context),
+                  ],
+                ),
+              );
+            },
           )),
     );
   }
@@ -60,9 +86,12 @@ class _FoodManagePageState extends State<FoodManagePage> {
       child: FloatingActionButton(
         backgroundColor: colorFa6d85,
         onPressed: () async {
-          final data = await showCreateFoodDialog(context);
+          final data = await showCreateFoodDialog(
+            context,
+            categories: _cubit!.getCategories,
+          );
           if (data != null) {
-            _cubit?.addFood(data.foodName);
+            _cubit?.addFood(data.foodName, data.foodCategories);
           }
         },
         child: const Icon(
@@ -74,113 +103,197 @@ class _FoodManagePageState extends State<FoodManagePage> {
   }
 
   Widget _foodList() {
-    return BlocConsumer<FoodManageCubit, FoodManageState>(
-      listener: (context, state) {
-        if (state is FoodManageErrorState && state.foods?.isNotEmpty != true) {
-          ScaffoldMessenger.of(context)
-              .showSnackBar(SnackBar(content: Text("Error ${state.e}")));
-        }
-      },
-      builder: (context, state) {
-        if (state is FoodManageInitialState) {
+    return Padding(
+      padding: const EdgeInsets.all(16).copyWith(bottom: 0),
+      child: BlocConsumer<FoodManageCubit, FoodManageState>(
+        listener: (context, state) {
+          // Handle error later
+        },
+        builder: (context, state) {
+          if (state.foodInCategories.isEmpty) {
+            return const Center(
+              child: CupertinoActivityIndicator(),
+            );
+          }
+
+          if (state.foodInCategories.isNotEmpty) {
+            return SingleChildScrollView(
+              physics: const BouncingScrollPhysics(),
+              child: Column(
+                children: state.foodInCategories.keys.map((e) {
+                  final foods = state.foodInCategories[e];
+                  if (foods == null) return const SizedBox.shrink();
+                  return Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      Padding(
+                          padding: const EdgeInsets.symmetric(horizontal: 8),
+                          child: Text(
+                            getCategoryTitle(e),
+                            style: const TextStyle(
+                                fontFamily: 'OpenSans',
+                                fontSize: 18,
+                                fontWeight: FontWeight.bold,
+                                color: colorFa6d85),
+                          )),
+                      const SizedBox(height: 8),
+                      _foodsInACategory(foods),
+                      const SizedBox(height: 80),
+                    ],
+                  );
+                }).toList(),
+              ),
+            );
+          }
+
           return const Center(
-            child: CupertinoActivityIndicator(),
+            child: Text("Something went wrong"),
           );
-        }
-
-        if (state.foods?.isNotEmpty == true) {
-          final list = state.foods!;
-          return ListView.builder(
-            itemBuilder: (context, i) {
-              final item = list[i];
-              final double topMargin = i == 0 ? 18 : 4;
-              return _FoodItem(topMargin: topMargin, item: item, cubit: _cubit);
-            },
-            itemCount: list.length,
-          );
-        }
-
-        if (state.foods?.isEmpty == true) {
-          return const Center(
-            child: Text("No food yet"),
-          );
-        }
-
-        return const Center(
-          child: Text("Something went wrong"),
-        );
-      },
+        },
+      ),
     );
   }
+
+  String getCategoryTitle(String categoryKey) {
+    switch (categoryKey) {
+      case 'none':
+        return 'Uncategorized Foods';
+      case 'dry':
+        return 'Dry Foods';
+      case 'water':
+        return 'Watery Foods';
+      case 'celebratory':
+        return 'Foods for celebrations';
+      case 'party':
+        return 'Foods for parties';
+      case 'unique':
+        return 'Unique Foods';
+      default:
+        return categoryKey.capitalize();
+    }
+  }
+
+  Widget _foodsInACategory(List<Food> foods) {
+    // TODO: define along with width threshold
+    final desiredWidth = (MediaQuery.of(context).size.width - 32) ~/ 5;
+    return SizedBox(
+      // TODO: rethink this part
+      height: desiredWidth.toDouble() + 80,
+      child: ListView.separated(
+        separatorBuilder: (context, index) => const SizedBox(width: 16),
+        scrollDirection: Axis.horizontal,
+        itemBuilder: (context, i) {
+          final item = foods[i];
+          return _FoodItem(item: item, listHeight: desiredWidth.toDouble());
+        },
+        itemCount: foods.length,
+      ),
+    );
+  }
+
+  @override
+  bool get wantKeepAlive => true;
 }
 
-class _FoodItem extends StatelessWidget {
-  _FoodItem({
+class _FoodItem extends StatefulWidget {
+  const _FoodItem({
     Key? key,
-    required this.topMargin,
     required this.item,
-    required FoodManageCubit? cubit,
-  })  : _cubit = cubit,
-        super(key: key);
+    required this.listHeight,
+  }) : super(key: key);
 
-  final double topMargin;
   final Food item;
-  final FoodManageCubit? _cubit;
+  final double listHeight;
 
+  @override
+  State<_FoodItem> createState() => _FoodItemState();
+}
+
+class _FoodItemState extends State<_FoodItem> {
   final ExpandableController _controller =
       ExpandableController(initialExpanded: false);
 
+  bool _isHovered = false;
+  bool _isExpanded = false;
+
+  bool get isFocused => _isHovered && !_isExpanded;
+
   @override
   Widget build(BuildContext context) {
-    return Container(
-      margin: EdgeInsets.only(
-        top: topMargin,
-        left: 32,
-        right: 32,
-        bottom: 8,
-      ),
-      decoration: BoxDecoration(
-        color: Colors.white,
-        border: Border.all(
-          color: Colors.grey,
-          style: BorderStyle.solid,
-          width: 1.0,
-        ),
-      ),
-      padding: const EdgeInsets.all(16),
-      child: InkWell(
-          onTap: () {
-            _controller.toggle();
-          },
-          child: Column(
-            children: [
-              _header(context),
-              ExpandableNotifier(
-                controller: _controller,
-                child: Expandable(
-                  collapsed: const SizedBox(
-                    height: 1,
-                    width: double.infinity,
-                  ),
-                  expanded: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      const SizedBox(height: 16),
-                      Text(
-                        'Places that sell this food:',
-                        style: TextStyle(
-                          fontFamily: 'OpenSans',
-                          fontSize: 16,
-                          color: Colors.black.withOpacity(0.6),
-                          fontWeight: FontWeight.w400,
-                        ),
-                      ),
-                      _places(),
-                    ],
-                  ),
-                ),
-              ),
+    return InkWell(
+      onTap: () {
+        setState(() {
+          _isExpanded = !_isExpanded;
+          _controller.toggle();
+        });
+      },
+      highlightColor: Colors.transparent,
+      splashColor: Colors.transparent,
+      hoverColor: Colors.transparent,
+      onHover: (bool isHovered) {
+        if (isHovered != _isHovered) {
+          setState(() {
+            _isHovered = isHovered;
+          });
+        }
+      },
+      child: Container(
+          width: widget.listHeight,
+          margin: const EdgeInsets.all(8),
+          decoration: BoxDecoration(
+            border: Border.all(color: colorFa6d85.withOpacity(0.8)),
+            color: isFocused ? colorFa6d85 : Colors.white,
+            borderRadius: BorderRadius.circular(16),
+            boxShadow: [
+              BoxShadow(
+                color: Colors.grey.shade200,
+                offset: const Offset(0, 2),
+                blurRadius: 1.0,
+                spreadRadius: 1.0,
+              )
             ],
+          ),
+          padding: const EdgeInsets.all(8),
+          child: Expanded(
+            child: ExpandableNotifier(
+              controller: _controller,
+              child: Expandable(
+                collapsed: Column(
+                  mainAxisAlignment: MainAxisAlignment.start,
+                  crossAxisAlignment: CrossAxisAlignment.center,
+                  children: [
+                    Image.asset(
+                      'assets/img/img_food_pho.png',
+                      fit: BoxFit.cover,
+                    ),
+                    Text(
+                      widget.item.name + '\n',
+                      maxLines: 2,
+                      overflow: TextOverflow.ellipsis,
+                      textAlign: TextAlign.center,
+                      style: TextStyle(
+                        fontFamily: 'OpenSans',
+                        fontSize: 18,
+                        fontWeight: FontWeight.w500,
+                        color: isFocused ? Colors.white : Colors.black,
+                      ),
+                    ),
+                    const SizedBox(height: 16),
+                    Divider(
+                      height: 1,
+                      thickness: 1,
+                      color: isFocused
+                          ? Colors.white
+                          : colorFa6d85.withOpacity(0.6),
+                    ),
+                    const SizedBox(height: 8),
+                    _editAndDelete(context),
+                  ],
+                ),
+                expanded: _places(),
+              ),
+            ),
           )),
     );
   }
@@ -188,20 +301,59 @@ class _FoodItem extends StatelessWidget {
   Widget _places() {
     return ListView.builder(
       shrinkWrap: true,
-      itemCount: item.places.keys.length + 1,
+      itemCount: widget.item.placeList.length + 2,
       itemBuilder: (context, i) {
-        if (i == item.places.keys.length) {
+        if (i == 0) {
+          return const Padding(
+            padding: EdgeInsets.only(bottom: 8),
+            child: Text(
+              'Places with this food:',
+              style: TextStyle(fontWeight: FontWeight.bold),
+            ),
+          );
+        }
+        if (i == widget.item.placeList.length + 1) {
           return _addPlaceBtn();
         }
-        return Container();
+
+        final placeItem = widget.item.placeList[i - 1];
+        final String directions = placeItem.direction?.isNotEmpty == true
+            ? widget.item.placeList[i - 1].direction!
+            : '(No directions)';
+        return InkWell(
+          // TODO: if enable this then click area to flip card is not enough
+          // onTap: () {
+          // Navigator.of(context)
+          //     .pushNamed(AppRouter.placeDetail, arguments: placeItem.id);
+          // },
+          child: Padding(
+            padding: const EdgeInsets.symmetric(vertical: 4),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  placeItem.name,
+                  maxLines: 2,
+                  overflow: TextOverflow.ellipsis,
+                ),
+                Text(
+                  directions,
+                  maxLines: 2,
+                  overflow: TextOverflow.ellipsis,
+                  style: TextStyle(color: Colors.black.withOpacity(0.5)),
+                ),
+              ],
+            ),
+          ),
+        );
       },
     );
   }
 
   Widget _addPlaceBtn() {
     return InkWell(
-      onTap: () {
-        // Add a place
+      onTap: () async {
+        await showAddPlaceInFoodDialog(context, food: widget.item);
       },
       child: Padding(
         padding: const EdgeInsets.all(8).copyWith(left: 0),
@@ -223,41 +375,37 @@ class _FoodItem extends StatelessWidget {
     );
   }
 
-  Widget _header(BuildContext context) {
+  Widget _editAndDelete(BuildContext context) {
     return Row(
       children: [
-        Expanded(
-          child: Text(
-            item.name,
-            style: const TextStyle(
-              fontFamily: 'OpenSans',
-              fontSize: 16,
-              fontWeight: FontWeight.w600,
-            ),
-          ),
-        ),
+        const Expanded(child: SizedBox()),
         IconButton(
           onPressed: () async {
-            final data = await showCreateFoodDialog(context, food: item);
+            final data = await showCreateFoodDialog(
+              context,
+              food: widget.item,
+              categories: context.read<FoodManageCubit>().getCategories,
+            );
             if (data != null) {
-              _cubit?.editFood(data.id, data.foodName);
+              context
+                  .read<FoodManageCubit>()
+                  .editFood(data.id, data.foodName, data.foodCategories);
             }
           },
-          icon: const Icon(
+          icon: Icon(
             Icons.edit,
-            size: 24,
-            color: Colors.grey,
+            size: 20,
+            color: isFocused ? Colors.white : Colors.grey,
           ),
         ),
-        const SizedBox(width: 16),
         IconButton(
           onPressed: () {
-            _cubit?.deleteFood(item.id);
+            context.read<FoodManageCubit>().deleteFood(widget.item.id);
           },
-          icon: const Icon(
+          icon: Icon(
             Icons.delete,
-            size: 24,
-            color: Colors.grey,
+            size: 20,
+            color: isFocused ? Colors.white : Colors.grey,
           ),
         )
       ],

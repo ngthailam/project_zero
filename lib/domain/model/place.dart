@@ -1,10 +1,14 @@
+import 'package:copy_with_extension/copy_with_extension.dart';
+import 'package:de1_mobile_friends/domain/model/food.dart';
 import 'package:de1_mobile_friends/domain/model/review.dart';
 import 'package:de1_mobile_friends/uuid_generator.dart';
 import 'package:equatable/equatable.dart';
 import 'package:json_annotation/json_annotation.dart';
+import 'package:collection/collection.dart';
 
 part 'place.g.dart';
 
+@CopyWith()
 @JsonSerializable(explicitToJson: true)
 class Place extends Equatable {
   final String id;
@@ -13,7 +17,10 @@ class Place extends Equatable {
   final Map<String, Review> reviews;
   // Key: food id
   // value: is enabled (always true currently)
+  // values from database
   final Map<String, bool> foods;
+  // real values
+  final List<Food> foodList;
 
   const Place({
     required this.id,
@@ -21,6 +28,7 @@ class Place extends Equatable {
     required this.direction,
     this.reviews = const {},
     this.foods = const {},
+    this.foodList = const [],
   });
 
   int get getAvgRating {
@@ -47,16 +55,21 @@ class Place extends Equatable {
   /// Connect the generated [_$PersonToJson] function to the `toJson` method.
   Map<String, dynamic> toJson() => _$PlaceToJson(this);
 
-  Place copyWith({
-    String? id,
-    String? name,
-    String? direction,
-  }) =>
-      Place(
-        id: id ?? this.id,
-        name: name ?? this.name,
-        direction: direction ?? this.direction,
-      );
+  Place withFoods(List<Food> foods) {
+    final List<Food> foodsInPlace = [];
+
+    this.foods.forEach((key, value) {
+      if (value == true) {
+        final matchedPlace =
+            foods.firstWhereOrNull((element) => element.id == key);
+        if (matchedPlace != null) {
+          foodsInPlace.add(matchedPlace);
+        }
+      }
+    });
+
+    return copyWith(foodList: foodsInPlace);
+  }
 
   @override
   List<Object?> get props => [
@@ -65,5 +78,6 @@ class Place extends Equatable {
         direction,
         reviews,
         foods,
+        foodList,
       ];
 }

@@ -29,4 +29,11 @@ abstract class PlaceRepo {
     required String foodId,
     required String placeId,
   });
+
+  Future<List<Place>> searchPlace(String keyword);
+
+  Future<bool> deleteFoodInPlace({
+    required String placeId,
+    required String foodId,
+  });
 }

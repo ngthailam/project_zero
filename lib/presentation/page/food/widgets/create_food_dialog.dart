@@ -8,6 +8,7 @@ import 'package:flutter/material.dart';
 Future<CreateFoodOutput?> showCreateFoodDialog(
   BuildContext context, {
   Food? food,
+  required Map<String, String> categories,
 }) {
   return showDialog<CreateFoodOutput>(
     context: context,
@@ -18,6 +19,7 @@ Future<CreateFoodOutput?> showCreateFoodDialog(
       return AlertDialog(
         content: CreateFoodDialog(
           food: food,
+          foodCategories: categories,
         ),
         shape: const RoundedRectangleBorder(
           borderRadius: BorderRadius.all(
@@ -32,14 +34,21 @@ Future<CreateFoodOutput?> showCreateFoodDialog(
 class CreateFoodOutput {
   final String? id;
   final String foodName;
+  final Map<String, bool> foodCategories;
 
-  CreateFoodOutput({this.id, required this.foodName});
+  CreateFoodOutput({
+    this.id,
+    required this.foodName,
+    required this.foodCategories,
+  });
 }
 
 class CreateFoodDialog extends StatefulWidget {
-  const CreateFoodDialog({Key? key, this.food}) : super(key: key);
+  const CreateFoodDialog({Key? key, this.food, required this.foodCategories})
+      : super(key: key);
 
   final Food? food;
+  final Map<String, String> foodCategories;
 
   @override
   State<CreateFoodDialog> createState() => _CreateFoodDialogState();
@@ -51,8 +60,14 @@ class _CreateFoodDialogState extends State<CreateFoodDialog> {
 
   final FocusNode _focusNode = FocusNode();
 
+  final Map<String, bool> _foodCategories = <String, bool>{};
+
   @override
   void initState() {
+    // ignore: avoid_function_literals_in_foreach_calls
+    widget.food?.categories?.entries.forEach((element) {
+      _foodCategories[element.key] = element.value;
+    });
     super.initState();
     WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
       _focusNode.requestFocus();
@@ -62,6 +77,7 @@ class _CreateFoodDialogState extends State<CreateFoodDialog> {
   @override
   void dispose() {
     _controller.dispose();
+    _focusNode.dispose();
     super.dispose();
   }
 
@@ -85,7 +101,7 @@ class _CreateFoodDialogState extends State<CreateFoodDialog> {
           const SizedBox(height: 48),
           _inputField(),
           const SizedBox(height: 16),
-          _occasionPicker(),
+          _foodCategoryPicker(),
           const SizedBox(height: 16),
           _confirmBtn(context),
         ],
@@ -126,13 +142,78 @@ class _CreateFoodDialogState extends State<CreateFoodDialog> {
           CreateFoodOutput(
             foodName: _controller.text,
             id: widget.food?.id,
+            foodCategories: _foodCategories,
           ),
         );
       },
     );
   }
 
-  Widget _occasionPicker() {
-    return Wrap();
+  Widget _foodCategoryPicker() {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.stretch,
+      children: [
+        Wrap(
+          crossAxisAlignment: WrapCrossAlignment.start,
+          runAlignment: WrapAlignment.start,
+          spacing: 8,
+          runSpacing: 8,
+          children: widget.foodCategories.keys.map((e) {
+            return CategoryChoiceChip(
+              categoryMapEntry: MapEntry(e, widget.foodCategories[e]!),
+              isPreSelected: widget.food?.categories?.keys.contains(e) == true,
+              onSelect: (String key, bool isSelected) {
+                _foodCategories[key] = isSelected;
+              },
+            );
+          }).toList(),
+        )
+      ],
+    );
+  }
+}
+
+class CategoryChoiceChip extends StatefulWidget {
+  const CategoryChoiceChip({
+    Key? key,
+    required this.categoryMapEntry,
+    this.isPreSelected = false,
+    required this.onSelect,
+  }) : super(key: key);
+
+  final MapEntry<String, String> categoryMapEntry;
+  final bool isPreSelected;
+  final Function(String categoryKey, bool isSelected) onSelect;
+
+  @override
+  State<CategoryChoiceChip> createState() => _CategoryChoiceChipState();
+}
+
+class _CategoryChoiceChipState extends State<CategoryChoiceChip> {
+  bool _isSelected = false;
+
+  @override
+  void initState() {
+    _isSelected = widget.isPreSelected;
+    super.initState();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return ChoiceChip(
+      label: Text(widget.categoryMapEntry.value),
+      selectedColor: colorFa6d85,
+      labelStyle: TextStyle(
+          color: _isSelected ? Colors.white : Colors.grey.withOpacity(0.7)),
+      selected: _isSelected,
+      onSelected: (bool selected) {
+        if (_isSelected != selected) {
+          setState(() {
+            _isSelected = selected;
+            widget.onSelect(widget.categoryMapEntry.key, _isSelected);
+          });
+        }
+      },
+    );
   }
 }

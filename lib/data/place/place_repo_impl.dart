@@ -1,5 +1,7 @@
 import 'dart:async';
 
+import 'package:de1_mobile_friends/data/food/food_local_datasource.dart';
+import 'package:de1_mobile_friends/data/food/food_remote_datasource.dart';
 import 'package:de1_mobile_friends/data/place/place_local_datasource.dart';
 import 'package:de1_mobile_friends/data/place/place_remote_datasource.dart';
 import 'package:de1_mobile_friends/domain/model/place.dart';
@@ -12,8 +14,15 @@ import 'package:collection/collection.dart';
 class PlaceRepoImpl extends PlaceRepo {
   final PlaceLocalDataSource _localDataSource;
   final PlaceRemoteDataSource _remoteDataSource;
+  final FoodLocalDataSource _foodLocalDataSource;
+  final FoodRemoteDataSource _foodRemoteDataSource;
 
-  PlaceRepoImpl(this._localDataSource, this._remoteDataSource);
+  PlaceRepoImpl(
+    this._localDataSource,
+    this._remoteDataSource,
+    this._foodLocalDataSource,
+    this._foodRemoteDataSource,
+  );
 
   StreamSubscription<List<Place>>? _placesRemoteStreamSub;
 
@@ -51,14 +60,23 @@ class PlaceRepoImpl extends PlaceRepo {
   }
 
   @override
-  deletePlace(String id) {
-    _remoteDataSource.deletePlace(id);
+  deletePlace(String id) async {
+    final Place? place = _localDataSource.getPlace(id);
+    if (place != null) {
+      for (var foodId in place.foods.keys) {
+        _foodRemoteDataSource.deletePlaceInFood(foodId: foodId, placeId: id);
+        _foodLocalDataSource.deletePlaceInFood(foodId: foodId, placeId: id);
+      }
+      await _remoteDataSource.deletePlace(id);
+    }
   }
 
   @override
   Stream<Place?> observeOnePlace(String input) {
     return observePlaces().map((event) {
-      return event.firstWhereOrNull((element) => element.id == input);
+      final foods = _foodLocalDataSource.getFoods();
+      final item = event.firstWhereOrNull((element) => element.id == input);
+      return item?.withFoods(foods);
     });
   }
 
@@ -84,5 +102,21 @@ class PlaceRepoImpl extends PlaceRepo {
       foodId: foodId,
       placeId: placeId,
     );
+  }
+
+  @override
+  Future<List<Place>> searchPlace(String keyword) {
+    final places = _localDataSource.getPlaces();
+    return Future.value(places
+        .where((element) =>
+            element.name.toLowerCase().contains(keyword.toLowerCase()))
+        .toList());
+  }
+
+  @override
+  Future<bool> deleteFoodInPlace(
+      {required String placeId, required String foodId}) {
+    return _remoteDataSource.deleteFoodInPlace(
+        foodId: foodId, placeId: placeId);
   }
 }

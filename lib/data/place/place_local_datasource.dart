@@ -1,5 +1,6 @@
 import 'dart:async';
 
+import 'package:de1_mobile_friends/data/food/food_local_datasource.dart';
 import 'package:de1_mobile_friends/domain/model/place.dart';
 import 'package:injectable/injectable.dart';
 import 'package:collection/collection.dart';
@@ -21,19 +22,32 @@ class PlaceLocalDataSourceImpl extends PlaceLocalDataSource {
 
   List<Place> _currentPlaces = [];
 
+  // TODO: circular dependencies
+  final FoodLocalDataSource _foodLocalDataSource;
+
+  PlaceLocalDataSourceImpl(this._foodLocalDataSource);
+
   @override
   List<Place> getPlaces() {
-    return _currentPlaces;
+    final foods = _foodLocalDataSource.getFoods();
+    return _currentPlaces.map((e) => e.withFoods(foods)).toList();
   }
 
   @override
   Place? getPlace(String id) {
-    return _currentPlaces.firstWhereOrNull((element) => element.id == id);
+    final foods = _foodLocalDataSource.getFoods();
+
+    final place =
+        _currentPlaces.firstWhereOrNull((element) => element.id == id);
+    return place?.withFoods(foods);
   }
 
   @override
   Stream<List<Place>> observePlaces() {
-    return placesStreamCtrl.stream;
+    final foods = _foodLocalDataSource.getFoods();
+    return placesStreamCtrl.stream.map((List<Place> event) {
+      return event.map((e) => e.withFoods(foods)).toList();
+    });
   }
 
   @override

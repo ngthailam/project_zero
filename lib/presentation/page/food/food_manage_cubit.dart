@@ -2,11 +2,11 @@ import 'dart:async';
 
 import 'package:de1_mobile_friends/domain/interactor/food/add_food_interactor.dart';
 import 'package:de1_mobile_friends/domain/interactor/food/delete_food_interactor.dart';
+import 'package:de1_mobile_friends/domain/interactor/food/get_food_categories_interactor.dart';
 import 'package:de1_mobile_friends/domain/interactor/food/observe_all_food_interactor.dart';
 import 'package:de1_mobile_friends/domain/interactor/occasion/get_occasions_interactor.dart';
 import 'package:de1_mobile_friends/domain/model/either.dart';
-import 'package:de1_mobile_friends/domain/model/food_type.dart';
-import 'package:de1_mobile_friends/domain/model/occasion.dart';
+import 'package:de1_mobile_friends/domain/model/food.dart';
 import 'package:de1_mobile_friends/presentation/page/food/food_manage_state.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:injectable/injectable.dart';
@@ -18,40 +18,56 @@ class FoodManageCubit extends Cubit<FoodManageState> {
     this._addFoodInteractor,
     this._deleteFoodInteractor,
     this._getOccasionInteractor,
-  ) : super(FoodManageInitialState());
+    this._getFoodCategoriesInteractor,
+  ) : super(FoodManageState());
 
   final ObserveAllFoodInteractor _allFoodInteractor;
   final AddFoodInteractor _addFoodInteractor;
   final DeleteFoodInteractor _deleteFoodInteractor;
+  // ignore: unused_field
   final GetOccasionInteractor _getOccasionInteractor;
+  final GetFoodCategoriesInteractor _getFoodCategoriesInteractor;
 
   StreamSubscription? _foodStreamSubscription;
-  FoodType _currentFoodType = FoodType();
+
+  Map<String, String> _categories = {};
+  Map<String, String> get getCategories => _categories;
 
   void initialize() async {
-    _getOccasion();
+    _categories = await _getFoodCategoriesInteractor.execute(null);
     final stream = await _allFoodInteractor.execute(null);
-    _foodStreamSubscription = stream.listen((foods) {
-      emit(FoodManagePrimaryState(foods: foods, occasion: state.occasion));
+    _foodStreamSubscription = stream.listen((List<Food> foods) {
+      final Map<String, List<Food>> foodGrouppedByCategory = {'none': []};
+
+      for (var food in foods) {
+        if (food.categories?.isNotEmpty == true) {
+          food.categories?.forEach((key, value) {
+            if (foodGrouppedByCategory[key] == null) {
+              foodGrouppedByCategory[key] = [food];
+            } else {
+              foodGrouppedByCategory[key]!.add(food);
+            }
+          });
+        } else {
+          foodGrouppedByCategory['none']?.add(food);
+        }
+      }
+
+      emit(FoodManageState(
+        foodInCategories: foodGrouppedByCategory,
+        occasion: state.occasion,
+      ));
     });
   }
 
-  void _getOccasion() {
-    _getOccasionInteractor.execute(null).then((value) {
-      emit(FoodManagePrimaryState(foods: state.foods, occasion: value));
-    }).catchError((e) {
-      // do nothing for now
-    });
-  }
-
-  void addFood(String? foodName) async {
+  void addFood(String? foodName, Map<String, bool> foodCategories) async {
     if (foodName?.isNotEmpty != true) {
       return;
     }
     final input = AddFoodInput(
       name: foodName!,
-      type: _currentFoodType,
       occasion: state.occasion,
+      categories: foodCategories,
     );
     final result = await _addFoodInteractor.execute(input);
     if (result.isSuccess()) {
@@ -62,7 +78,11 @@ class FoodManageCubit extends Cubit<FoodManageState> {
     }
   }
 
-  void editFood(String? id, String foodName) async {
+  void editFood(
+    String? id,
+    String foodName,
+    Map<String, bool> foodCategories,
+  ) async {
     if (foodName.isEmpty) {
       return;
     }
@@ -70,8 +90,8 @@ class FoodManageCubit extends Cubit<FoodManageState> {
     final input = AddFoodInput(
       id: id,
       name: foodName,
-      type: _currentFoodType,
       occasion: state.occasion,
+      categories: foodCategories,
     );
     final result = await _addFoodInteractor.execute(input);
     if (result.isSuccess()) {
@@ -91,15 +111,8 @@ class FoodManageCubit extends Cubit<FoodManageState> {
     }
   }
 
-  void onChangedType(FoodType type) {
-    _currentFoodType = type;
-  }
-
   void disposeManual() {
     _foodStreamSubscription?.cancel();
   }
 
-  void onPickOccasion(Occasion occasion) {
-    emit(FoodManagePrimaryState(foods: state.foods, occasion: occasion));
-  }
 }

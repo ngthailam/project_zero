@@ -48,6 +48,7 @@ dependencies:
   copy_with_extension: ^4.0.2
   dropdown_button2: ^1.6.3
   expandable: ^5.0.1
+  textfield_search: ^0.10.0
 
 dev_dependencies:
   flutter_test:

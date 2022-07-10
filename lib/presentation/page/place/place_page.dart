@@ -3,6 +3,7 @@ import 'package:de1_mobile_friends/domain/interactor/food/search_food_interactor
 import 'package:de1_mobile_friends/domain/model/food.dart';
 import 'package:de1_mobile_friends/domain/model/place.dart';
 import 'package:de1_mobile_friends/main.dart';
+import 'package:de1_mobile_friends/presentation/page/place/common/add_food_in_place_dialog.dart';
 import 'package:de1_mobile_friends/presentation/page/place/place_cubit.dart';
 import 'package:de1_mobile_friends/presentation/page/place/place_state.dart';
 import 'package:de1_mobile_friends/presentation/page/place_add/place_add_page.dart';
@@ -68,7 +69,8 @@ class _PlacePageState extends State<PlacePage> {
         }
 
         return Padding(
-          padding: EdgeInsets.all(isMobile(context) ? 16 : 48),
+          padding:
+              EdgeInsets.all(isMobile(context) ? 16 : 48).copyWith(bottom: 0),
           child: GridView.builder(
             itemCount: places!.length,
             gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
@@ -126,14 +128,17 @@ class _PlaceItem extends StatelessWidget {
   Widget build(BuildContext context) {
     return InkWell(
       onTap: () {
-        Navigator.of(context)
-            .pushNamed(AppRouter.placeDetail, arguments: place.id);
+        Navigator.of(context).pushNamed(
+          AppRouter.placeDetail,
+          arguments: place.id,
+        );
       },
       child: Container(
         decoration: BoxDecoration(
+          borderRadius: BorderRadius.circular(16),
           color: Colors.white,
           border: Border.all(
-            color: Colors.grey,
+            color: colorFa6d85,
             style: BorderStyle.solid,
             width: 1.0,
           ),
@@ -217,10 +222,10 @@ class _PlaceItem extends StatelessWidget {
     );
   }
 
-  Widget _addFoodsBtn() {
+  Widget _addFoodsBtn(BuildContext context) {
     return InkWell(
-      onTap: () {
-        // Add a place
+      onTap: () async {
+        await showAddFoodInPlace(context, place: place);
       },
       child: Padding(
         padding: const EdgeInsets.all(8).copyWith(left: 0),
@@ -245,13 +250,13 @@ class _PlaceItem extends StatelessWidget {
   Widget _foods() {
     return Expanded(
       child: ListView.builder(
-        itemCount: place.foods.keys.length + 1,
+        itemCount: place.foodList.length + 1,
         itemBuilder: (context, i) {
-          if (i == 0) {
-            return _addFoodsBtn();
+          if (i == place.foodList.length) {
+            return _addFoodsBtn(context);
           }
 
-          return Text(place.foods.keys.toList()[i - 1]);
+          return Text(place.foodList[i].name);
         },
       ),
     );

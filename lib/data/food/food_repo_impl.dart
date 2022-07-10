@@ -1,5 +1,8 @@
+import 'package:de1_mobile_friends/data/food/food_local_datasource.dart';
+import 'package:de1_mobile_friends/data/food/food_remote_datasource.dart';
+import 'package:de1_mobile_friends/data/place/place_local_datasource.dart';
+import 'package:de1_mobile_friends/data/place/place_remote_datasource.dart';
 import 'package:de1_mobile_friends/domain/model/food.dart';
-import 'package:de1_mobile_friends/domain/model/food_type.dart';
 import 'package:de1_mobile_friends/domain/model/occasion.dart';
 import 'package:de1_mobile_friends/domain/repo/food_repo.dart';
 import 'package:de1_mobile_friends/domain/repo/occasion_repo.dart';
@@ -15,20 +18,34 @@ class FoodFirebaseKey {
 @Singleton(as: FoodRepo)
 class FoodRepoImpl extends FoodRepo {
   final OccasionRepo _occasionRepo;
+  final PlaceLocalDataSource _placeLocalDataSource;
+  final FoodLocalDataSource _foodLocalDataSource;
+  final PlaceRemoteDataSource _placeRemoteDataSource;
+  final FoodRemoteDataSource _foodRemoteDataSource;
 
-  FoodRepoImpl(this._occasionRepo);
+  FoodRepoImpl(
+    this._occasionRepo,
+    this._placeLocalDataSource,
+    this._foodLocalDataSource,
+    this._placeRemoteDataSource,
+    this._foodRemoteDataSource,
+  );
 
-  // Need to clean this up later
-  List<Food> _foods = [];
+  @override
+  List<Food> getFoodsLocal() {
+    return _foodLocalDataSource.getFoods();
+  }
 
   @override
   Future<List<Food>> getAllFoods() async {
     try {
       final ref = FirebaseDatabase.instance.ref(FoodFirebaseKey.main);
+      final allPlaces = _placeLocalDataSource.getPlaces();
 
       final snapshot = await ref.get();
       return snapshot.children
           .map((e) => Food.fromJson(e.value as Map<String, dynamic>))
+          .map((e) => e.withPlaces(allPlaces))
           .toList();
     } catch (e) {
       return [];
@@ -38,28 +55,30 @@ class FoodRepoImpl extends FoodRepo {
   @override
   Stream<List<Food>> observeAllFoods() {
     final ref = FirebaseDatabase.instance.ref(FoodFirebaseKey.main);
+    final allPlaces = _placeLocalDataSource.getPlaces();
     return ref.onValue.map((DatabaseEvent event) {
       final foods = event.snapshot.children
           .map((e) => Food.fromJson(e.value as Map<String, dynamic>))
+          .map((e) => e.withPlaces(allPlaces))
           .toList();
-      _foods = foods;
+      _foodLocalDataSource.saveFoods(foods);
       return foods;
     });
   }
 
   @override
-  Future<bool> addFood(
+  Future<bool> saveFood(
     String foodName, {
-    FoodType? type,
     Occasion? occasion,
     String? id,
+    required Map<String, bool> categories,
   }) async {
     Occasion foodOccasion = occasion ?? await _occasionRepo.getOccasions();
     final food = Food(
       id: id ?? generateRandomUuid(),
       name: foodName,
-      type: type ?? FoodType(),
       occasion: foodOccasion.occasions,
+      categories: categories,
     );
     FirebaseDatabase firebase = FirebaseDatabase.instance;
     DatabaseReference ref = firebase.ref("${FoodFirebaseKey.main}/${food.id}");
@@ -69,9 +88,15 @@ class FoodRepoImpl extends FoodRepo {
 
   @override
   Future<bool> deleteFood(String id) async {
+    final food = _foodLocalDataSource.getFood(id);
     FirebaseDatabase firebase = FirebaseDatabase.instance;
     DatabaseReference ref = firebase.ref("${FoodFirebaseKey.main}/$id");
     await ref.remove();
+    // ignore: avoid_function_literals_in_foreach_calls
+    food?.places.keys.forEach((placeId) {
+      _placeRemoteDataSource.deleteFoodInPlace(placeId: placeId, foodId: id);
+    });
+    //
     return true;
   }
 
@@ -93,23 +118,35 @@ class FoodRepoImpl extends FoodRepo {
   @override
   Future<bool> deletePlaceInFood(
       {required String foodId, required String placeId}) async {
-    try {
-      FirebaseDatabase firebase = FirebaseDatabase.instance;
-      final refPath =
-          "${FoodFirebaseKey.main}/$foodId/${FoodFirebaseKey.places}/$placeId";
-      DatabaseReference ref = firebase.ref(refPath);
-      await ref.remove();
-      return true;
-    } on Exception catch (_) {
-      return false;
-    }
+    final resultRemote = await _foodRemoteDataSource.deletePlaceInFood(
+        foodId: foodId, placeId: placeId);
+    final resulLocal = _foodLocalDataSource.deletePlaceInFood(
+        foodId: foodId, placeId: placeId);
+    return resultRemote && resulLocal;
   }
 
   @override
   Future<List<Food>> searchByName({required String keyword}) async {
-    return _foods
+    return _foodLocalDataSource
+        .getFoods()
         .where((element) =>
             element.name.toLowerCase().contains(keyword.toLowerCase()))
         .toList();
+  }
+
+  @override
+  Future<Map<String, String>> getCategories() async {
+    try {
+      final ref = FirebaseDatabase.instance.ref('food_category');
+
+      final snapshot = await ref.get();
+      final snapshotMap = snapshot.value as Map<String, dynamic>;
+      final categories =
+          snapshotMap.map(((key, value) => MapEntry(key, value as String)));
+
+      return categories;
+    } catch (e) {
+      return {};
+    }
   }
 }
