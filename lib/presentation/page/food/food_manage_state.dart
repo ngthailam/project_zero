@@ -6,11 +6,13 @@ part 'food_manage_state.g.dart';
 
 @CopyWith()
 class FoodManageState {
-  final Map<String, List<Food>> foodInCategories;
+  final List<Food>? foods;
+  final Map<String, List<Food>> displayedFoods;
   final Occasion? occasion;
 
   FoodManageState({
-    this.foodInCategories = const {},
+    this.displayedFoods = const {},
+    this.foods,
     this.occasion,
   });
 }

@@ -1,4 +1,4 @@
-import 'package:de1_mobile_friends/presentation/page/common/app_bar.dart';
+import 'package:de1_mobile_friends/presentation/widget/app_bar.dart';
 import 'package:de1_mobile_friends/presentation/page/food/food_manage_page.dart';
 import 'package:de1_mobile_friends/presentation/page/home/home_page.dart';
 import 'package:de1_mobile_friends/presentation/page/place/place_page.dart';

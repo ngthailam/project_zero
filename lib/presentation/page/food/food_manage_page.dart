@@ -6,6 +6,7 @@ import 'package:de1_mobile_friends/presentation/page/food/food_manage_state.dart
 import 'package:de1_mobile_friends/presentation/page/food/widgets/create_food_dialog.dart';
 import 'package:de1_mobile_friends/presentation/utils/colors.dart';
 import 'package:de1_mobile_friends/presentation/utils/constants.dart';
+import 'package:de1_mobile_friends/presentation/widget/search_box.dart';
 import 'package:de1_mobile_friends/utils/string_ext.dart';
 import 'package:expandable/expandable.dart';
 import 'package:flutter/cupertino.dart';
@@ -57,10 +58,10 @@ class _FoodManagePageState extends State<FoodManagePage>
           create: (context) => _cubit!,
           child: BlocBuilder<FoodManageCubit, FoodManageState>(
             buildWhen: (previous, current) {
-              return previous.foodInCategories != current.foodInCategories;
+              return previous.displayedFoods != current.displayedFoods;
             },
             builder: (context, state) {
-              if (state.foodInCategories.isEmpty) {
+              if (state.displayedFoods.isEmpty) {
                 return const Center(
                   child: CupertinoActivityIndicator(),
                 );
@@ -70,7 +71,22 @@ class _FoodManagePageState extends State<FoodManagePage>
                 height: double.infinity,
                 child: Stack(
                   children: [
-                    _foodList(),
+                    Column(
+                      children: [
+                        const SizedBox(height: 8),
+                        Padding(
+                          padding: const EdgeInsets.symmetric(horizontal: 20),
+                          child: SearchBox(
+                            hintText: 'Search food',
+                            onChanged: (text) {
+                              _cubit?.searchFood(text);
+                            },
+                          ),
+                        ),
+                        const SizedBox(height: 8),
+                        Expanded(child: _foodList()),
+                      ],
+                    ),
                     _createFoodFab(context),
                   ],
                 ),
@@ -111,18 +127,18 @@ class _FoodManagePageState extends State<FoodManagePage>
           // Handle error later
         },
         builder: (context, state) {
-          if (state.foodInCategories.isEmpty) {
+          if (state.displayedFoods.isEmpty) {
             return const Center(
               child: CupertinoActivityIndicator(),
             );
           }
 
-          if (state.foodInCategories.isNotEmpty) {
+          if (state.displayedFoods.isNotEmpty) {
             return SingleChildScrollView(
               physics: const BouncingScrollPhysics(),
               child: Column(
-                children: state.foodInCategories.keys.map((e) {
-                  final foods = state.foodInCategories[e];
+                children: state.displayedFoods.keys.map((e) {
+                  final foods = state.displayedFoods[e];
                   if (foods == null) return const SizedBox.shrink();
                   return Column(
                     crossAxisAlignment: CrossAxisAlignment.start,

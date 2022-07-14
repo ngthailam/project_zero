@@ -7,7 +7,9 @@ part of 'food_manage_state.dart';
 // **************************************************************************
 
 abstract class _$FoodManageStateCWProxy {
-  FoodManageState foodInCategories(Map<String, List<Food>> foodInCategories);
+  FoodManageState displayedFoods(Map<String, List<Food>> displayedFoods);
+
+  FoodManageState foods(List<Food>? foods);
 
   FoodManageState occasion(Occasion? occasion);
 
@@ -18,7 +20,8 @@ abstract class _$FoodManageStateCWProxy {
   /// FoodManageState(...).copyWith(id: 12, name: "My name")
   /// ````
   FoodManageState call({
-    Map<String, List<Food>>? foodInCategories,
+    Map<String, List<Food>>? displayedFoods,
+    List<Food>? foods,
     Occasion? occasion,
   });
 }
@@ -30,8 +33,11 @@ class _$FoodManageStateCWProxyImpl implements _$FoodManageStateCWProxy {
   const _$FoodManageStateCWProxyImpl(this._value);
 
   @override
-  FoodManageState foodInCategories(Map<String, List<Food>> foodInCategories) =>
-      this(foodInCategories: foodInCategories);
+  FoodManageState displayedFoods(Map<String, List<Food>> displayedFoods) =>
+      this(displayedFoods: displayedFoods);
+
+  @override
+  FoodManageState foods(List<Food>? foods) => this(foods: foods);
 
   @override
   FoodManageState occasion(Occasion? occasion) => this(occasion: occasion);
@@ -45,15 +51,20 @@ class _$FoodManageStateCWProxyImpl implements _$FoodManageStateCWProxy {
   /// FoodManageState(...).copyWith(id: 12, name: "My name")
   /// ````
   FoodManageState call({
-    Object? foodInCategories = const $CopyWithPlaceholder(),
+    Object? displayedFoods = const $CopyWithPlaceholder(),
+    Object? foods = const $CopyWithPlaceholder(),
     Object? occasion = const $CopyWithPlaceholder(),
   }) {
     return FoodManageState(
-      foodInCategories: foodInCategories == const $CopyWithPlaceholder() ||
-              foodInCategories == null
-          ? _value.foodInCategories
+      displayedFoods: displayedFoods == const $CopyWithPlaceholder() ||
+              displayedFoods == null
+          ? _value.displayedFoods
           // ignore: cast_nullable_to_non_nullable
-          : foodInCategories as Map<String, List<Food>>,
+          : displayedFoods as Map<String, List<Food>>,
+      foods: foods == const $CopyWithPlaceholder()
+          ? _value.foods
+          // ignore: cast_nullable_to_non_nullable
+          : foods as List<Food>?,
       occasion: occasion == const $CopyWithPlaceholder()
           ? _value.occasion
           // ignore: cast_nullable_to_non_nullable

@@ -54,7 +54,8 @@ class FoodManageCubit extends Cubit<FoodManageState> {
       }
 
       emit(FoodManageState(
-        foodInCategories: foodGrouppedByCategory,
+        foods: foods,
+        displayedFoods: foodGrouppedByCategory,
         occasion: state.occasion,
       ));
     });
@@ -115,4 +116,34 @@ class FoodManageCubit extends Cubit<FoodManageState> {
     _foodStreamSubscription?.cancel();
   }
 
+  void searchFood(String text) {
+    // Do in place search
+    if (state.foods?.isNotEmpty != true) return;
+    final originalData = state.foods!;
+    final Map<String, List<Food>> foodGrouppedByCategory = {'none': []};
+
+    for (var food in originalData) {
+      if (text.isNotEmpty &&
+          !food.name.toLowerCase().contains(text.toLowerCase())) {
+        continue;
+      }
+
+      if (food.categories?.isNotEmpty == true) {
+        food.categories?.forEach((key, value) {
+          if (foodGrouppedByCategory[key] == null) {
+            foodGrouppedByCategory[key] = [food];
+          } else {
+            foodGrouppedByCategory[key]!.add(food);
+          }
+        });
+      } else {
+        foodGrouppedByCategory['none']?.add(food);
+      }
+    }
+
+    emit(FoodManageState(
+      displayedFoods: foodGrouppedByCategory,
+      occasion: state.occasion,
+    ));
+  }
 }
