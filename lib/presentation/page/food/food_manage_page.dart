@@ -177,13 +177,14 @@ class _FoodManagePageState extends State<FoodManagePage>
   }
 
   Widget _foodsInACategory(List<Food> foods) {
+    // Need to fiqure this out
     final divider =
         getOnScreenSize(context, small: 2, medium: 4, large: 5, huge: 7);
     int desiredWidth = (MediaQuery.of(context).size.width - 32) ~/ divider;
 
     return SizedBox(
       height: desiredWidth.toDouble() +
-          getOnScreenSize(context, small: 82, medium: 78, large: 76, huge: 66),
+          getOnScreenSize(context, small: 64, medium: 64, large: 60, huge: 52),
       child: ListView.separated(
         separatorBuilder: (context, index) => const SizedBox(width: 16),
         scrollDirection: Axis.horizontal,
@@ -259,44 +260,41 @@ class _FoodItemState extends State<_FoodItem> {
             ],
           ),
           padding: const EdgeInsets.all(8),
-          child: Expanded(
-            child: ExpandableNotifier(
-              controller: _controller,
-              child: Expandable(
-                collapsed: Column(
-                  mainAxisAlignment: MainAxisAlignment.start,
-                  crossAxisAlignment: CrossAxisAlignment.center,
-                  children: [
-                    Image.asset(
-                      'assets/img/img_food_pho.png',
-                      fit: BoxFit.cover,
+          child: ExpandableNotifier(
+            controller: _controller,
+            child: Expandable(
+              collapsed: Column(
+                mainAxisAlignment: MainAxisAlignment.start,
+                crossAxisAlignment: CrossAxisAlignment.center,
+                children: [
+                  Image.asset(
+                    'assets/img/img_food_pho.png',
+                    fit: BoxFit.cover,
+                  ),
+                  Text(
+                    widget.item.name + '\n',
+                    maxLines: 2,
+                    overflow: TextOverflow.ellipsis,
+                    textAlign: TextAlign.center,
+                    style: TextStyle(
+                      fontFamily: 'OpenSans',
+                      fontSize: 18,
+                      fontWeight: FontWeight.w500,
+                      color: isFocused ? Colors.white : Colors.black,
                     ),
-                    Text(
-                      widget.item.name + '\n',
-                      maxLines: 2,
-                      overflow: TextOverflow.ellipsis,
-                      textAlign: TextAlign.center,
-                      style: TextStyle(
-                        fontFamily: 'OpenSans',
-                        fontSize: 18,
-                        fontWeight: FontWeight.w500,
-                        color: isFocused ? Colors.white : Colors.black,
-                      ),
-                    ),
-                    const SizedBox(height: 16),
-                    Divider(
-                      height: 1,
-                      thickness: 1,
-                      color: isFocused
-                          ? Colors.white
-                          : colorFa6d85.withOpacity(0.6),
-                    ),
-                    const SizedBox(height: 8),
-                    _editAndDelete(context),
-                  ],
-                ),
-                expanded: _places(),
+                  ),
+                  const SizedBox(height: 16),
+                  Divider(
+                    height: 1,
+                    thickness: 1,
+                    color:
+                        isFocused ? Colors.white : colorFa6d85.withOpacity(0.6),
+                  ),
+                  const SizedBox(height: 8),
+                  _editAndDelete(context),
+                ],
               ),
+              expanded: _places(),
             ),
           )),
     );
