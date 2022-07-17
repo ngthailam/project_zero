@@ -13,6 +13,8 @@ abstract class _$FoodManageStateCWProxy {
 
   FoodManageState occasion(Occasion? occasion);
 
+  FoodManageState searchKeyword(String searchKeyword);
+
   /// This function **does support** nullification of nullable fields. All `null` values passed to `non-nullable` fields will be ignored. You can also use `FoodManageState(...).copyWith.fieldName(...)` to override fields one at a time with nullification support.
   ///
   /// Usage
@@ -23,6 +25,7 @@ abstract class _$FoodManageStateCWProxy {
     Map<String, List<Food>>? displayedFoods,
     List<Food>? foods,
     Occasion? occasion,
+    String? searchKeyword,
   });
 }
 
@@ -43,6 +46,10 @@ class _$FoodManageStateCWProxyImpl implements _$FoodManageStateCWProxy {
   FoodManageState occasion(Occasion? occasion) => this(occasion: occasion);
 
   @override
+  FoodManageState searchKeyword(String searchKeyword) =>
+      this(searchKeyword: searchKeyword);
+
+  @override
 
   /// This function **does support** nullification of nullable fields. All `null` values passed to `non-nullable` fields will be ignored. You can also use `FoodManageState(...).copyWith.fieldName(...)` to override fields one at a time with nullification support.
   ///
@@ -54,6 +61,7 @@ class _$FoodManageStateCWProxyImpl implements _$FoodManageStateCWProxy {
     Object? displayedFoods = const $CopyWithPlaceholder(),
     Object? foods = const $CopyWithPlaceholder(),
     Object? occasion = const $CopyWithPlaceholder(),
+    Object? searchKeyword = const $CopyWithPlaceholder(),
   }) {
     return FoodManageState(
       displayedFoods: displayedFoods == const $CopyWithPlaceholder() ||
@@ -69,6 +77,11 @@ class _$FoodManageStateCWProxyImpl implements _$FoodManageStateCWProxy {
           ? _value.occasion
           // ignore: cast_nullable_to_non_nullable
           : occasion as Occasion?,
+      searchKeyword:
+          searchKeyword == const $CopyWithPlaceholder() || searchKeyword == null
+              ? _value.searchKeyword
+              // ignore: cast_nullable_to_non_nullable
+              : searchKeyword as String,
     );
   }
 }

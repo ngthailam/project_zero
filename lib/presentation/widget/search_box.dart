@@ -28,13 +28,19 @@ class _SearchBoxState extends State<SearchBox> {
     return TextFormField(
       cursorColor: colorFa6d85,
       decoration: InputDecoration(
+        enabledBorder: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(16),
+          borderSide: const BorderSide(
+            color: Colors.grey,
+          ),
+        ),
         border: OutlineInputBorder(
           borderRadius: BorderRadius.circular(16),
           borderSide: BorderSide(
             color: colorFa6d85.withOpacity(0.5),
           ),
         ),
-        fillColor: Colors.grey.withOpacity(0.1),
+        fillColor: Colors.transparent,
         contentPadding:
             const EdgeInsets.only(left: 24, bottom: 8, top: 8, right: 24),
         focusedBorder: OutlineInputBorder(

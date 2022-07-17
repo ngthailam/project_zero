@@ -9,6 +9,7 @@ import 'package:de1_mobile_friends/presentation/page/place/place_state.dart';
 import 'package:de1_mobile_friends/presentation/page/place_add/place_add_page.dart';
 import 'package:de1_mobile_friends/presentation/utils/colors.dart';
 import 'package:de1_mobile_friends/presentation/utils/constants.dart';
+import 'package:de1_mobile_friends/presentation/widget/search_box.dart';
 import 'package:de1_mobile_friends/presentation/widget/search_text_field.dart';
 import 'package:de1_mobile_friends/utils/string_ext.dart';
 import 'package:flutter/material.dart';
@@ -45,7 +46,22 @@ class _PlacePageState extends State<PlacePage> {
           create: (context) => _cubit!..initialze(),
           child: Stack(
             children: [
-              _places(),
+              Column(
+                children: [
+                  const SizedBox(height: 8),
+                  Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: 20),
+                    child: SearchBox(
+                      hintText: 'Search Place',
+                      onChanged: (String text) {
+                        _cubit?.searchPlace(text);
+                      },
+                    ),
+                  ),
+                  const SizedBox(height: 8),
+                  Expanded(child: _places()),
+                ],
+              ),
               _createPlaceFab(),
             ],
           )),
@@ -55,32 +71,32 @@ class _PlacePageState extends State<PlacePage> {
   Widget _places() {
     return BlocConsumer<PlaceCubit, PlaceState>(
       listener: (context, state) {
-        if (state is PlaceErrorState) {
-          ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(content: Text("Error: ${state.e}")),
-          );
-        }
+        // if (state is PlaceErrorState) {
+        //   ScaffoldMessenger.of(context).showSnackBar(
+        //     SnackBar(content: Text("Error: ${state.e}")),
+        //   );
+        // }
       },
       builder: (context, state) {
-        final places = state.places;
+        final places = state.displayedPlaces;
 
-        if (places?.isNotEmpty != true) {
+        if (places.isEmpty) {
           return const SizedBox.shrink();
         }
 
         return Padding(
-          padding:
-              EdgeInsets.all(isMobile(context) ? 16 : 48).copyWith(bottom: 0),
+          padding: const EdgeInsets.all(16).copyWith(bottom: 0),
           child: GridView.builder(
-            itemCount: places!.length,
+            itemCount: places.length,
             gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
               crossAxisSpacing: 16,
               mainAxisSpacing: 16,
               crossAxisCount: getOnScreenSize<int>(
                 context,
                 small: 1,
-                medium: 3,
-                large: 4,
+                medium: 4,
+                large: 5,
+                huge: 6,
               ),
             ),
             itemBuilder: (context, i) {

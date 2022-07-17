@@ -1,29 +1,17 @@
-import 'package:de1_mobile_friends/domain/model/food.dart';
+import 'package:copy_with_extension/copy_with_extension.dart';
 import 'package:de1_mobile_friends/domain/model/place.dart';
 
-abstract class PlaceState {
+part 'place_state.g.dart';
+
+@CopyWith()
+class PlaceState {
   final List<Place>? places;
+  final List<Place> displayedPlaces;
+  final String searchKeyword;
 
-  PlaceState(this.places);
-}
-
-class PlacePrimaryState extends PlaceState {
-  PlacePrimaryState({List<Place>? places}) : super(places);
-}
-
-class PlaceFoodSearchingState extends PlaceState {
-  final String keyword;
-  final List<Food>? searchResults;
-
-  PlaceFoodSearchingState({
-    List<Place>? places,
-    required this.keyword,
-    this.searchResults,
-  }) : super(places);
-}
-
-class PlaceErrorState extends PlaceState {
-  final Exception e;
-
-  PlaceErrorState({required this.e, List<Place>? places}) : super(places);
+  PlaceState({
+    this.places,
+    this.displayedPlaces = const [],
+    this.searchKeyword = '',
+  });
 }
