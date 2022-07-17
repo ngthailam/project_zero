@@ -37,23 +37,17 @@ class FoodManageCubit extends Cubit<FoodManageState> {
     _categories = await _getFoodCategoriesInteractor.execute(null);
     final stream = await _allFoodInteractor.execute(null);
     _foodStreamSubscription = stream.listen((List<Food> foods) {
-      final Map<String, List<Food>> foodGrouppedByCategory = {'none': []};
+      final filteredFoodList = state.searchKeyword.isNotEmpty
+          ? searchInFoods(
+              text: state.searchKeyword,
+              foods: foods,
+            )
+          : foods;
 
-      for (var food in foods) {
-        if (food.categories?.isNotEmpty == true) {
-          food.categories?.forEach((key, value) {
-            if (foodGrouppedByCategory[key] == null) {
-              foodGrouppedByCategory[key] = [food];
-            } else {
-              foodGrouppedByCategory[key]!.add(food);
-            }
-          });
-        } else {
-          foodGrouppedByCategory['none']?.add(food);
-        }
-      }
+      final Map<String, List<Food>> foodGrouppedByCategory =
+          foodListToFoodGrouppedByCategory(filteredFoodList);
 
-      emit(FoodManageState(
+      emit(state.copyWith(
         foods: foods,
         displayedFoods: foodGrouppedByCategory,
         occasion: state.occasion,
@@ -119,15 +113,21 @@ class FoodManageCubit extends Cubit<FoodManageState> {
   void searchFood(String text) {
     // Do in place search
     if (state.foods?.isNotEmpty != true) return;
-    final originalData = state.foods!;
+    final originalData = searchInFoods(text: text, foods: state.foods!);
+    final Map<String, List<Food>> foodGrouppedByCategory =
+        foodListToFoodGrouppedByCategory(originalData);
+
+    emit(state.copyWith(
+      displayedFoods: foodGrouppedByCategory,
+      occasion: state.occasion,
+      searchKeyword: text,
+    ));
+  }
+
+  Map<String, List<Food>> foodListToFoodGrouppedByCategory(List<Food> foods) {
     final Map<String, List<Food>> foodGrouppedByCategory = {'none': []};
 
-    for (var food in originalData) {
-      if (text.isNotEmpty &&
-          !food.name.toLowerCase().contains(text.toLowerCase())) {
-        continue;
-      }
-
+    for (var food in foods) {
       if (food.categories?.isNotEmpty == true) {
         food.categories?.forEach((key, value) {
           if (foodGrouppedByCategory[key] == null) {
@@ -140,10 +140,13 @@ class FoodManageCubit extends Cubit<FoodManageState> {
         foodGrouppedByCategory['none']?.add(food);
       }
     }
+    return foodGrouppedByCategory;
+  }
 
-    emit(FoodManageState(
-      displayedFoods: foodGrouppedByCategory,
-      occasion: state.occasion,
-    ));
+  List<Food> searchInFoods({required String text, required List<Food> foods}) {
+    return foods
+        .where((element) =>
+            element.name.toLowerCase().contains(text.toLowerCase()))
+        .toList();
   }
 }

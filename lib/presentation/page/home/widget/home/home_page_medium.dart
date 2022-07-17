@@ -35,6 +35,12 @@ class _HomePageMediumState extends State<HomePageMedium> {
   Widget build(BuildContext context) {
     return BlocBuilder<HomeCubit, HomeState>(
       builder: (BuildContext context, HomeState state) {
+        if (state.foods?.isNotEmpty != true) {
+          return const Center(
+            child: Text('Something went wrong, please reload page'),
+          );
+        }
+
         if (state.occasions?.occasions.isNotEmpty == true) {
           return Column(
             crossAxisAlignment: CrossAxisAlignment.center,

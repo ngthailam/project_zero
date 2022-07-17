@@ -78,7 +78,7 @@ class _FoodManagePageState extends State<FoodManagePage>
                           padding: const EdgeInsets.symmetric(horizontal: 20),
                           child: SearchBox(
                             hintText: 'Search food',
-                            onChanged: (text) {
+                            onChanged: (String text) {
                               _cubit?.searchFood(text);
                             },
                           ),
@@ -139,7 +139,9 @@ class _FoodManagePageState extends State<FoodManagePage>
               child: Column(
                 children: state.displayedFoods.keys.map((e) {
                   final foods = state.displayedFoods[e];
-                  if (foods == null) return const SizedBox.shrink();
+                  if (foods == null || foods.isEmpty) {
+                    return const SizedBox.shrink();
+                  }
                   return Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     mainAxisSize: MainAxisSize.min,

@@ -9,10 +9,12 @@ class FoodManageState {
   final List<Food>? foods;
   final Map<String, List<Food>> displayedFoods;
   final Occasion? occasion;
+  final String searchKeyword;
 
   FoodManageState({
     this.displayedFoods = const {},
     this.foods,
     this.occasion,
+    this.searchKeyword = '',
   });
 }

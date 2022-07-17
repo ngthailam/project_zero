@@ -136,8 +136,7 @@ _i1.GetIt $initGetIt(_i1.GetIt get,
       get<_i30.ObservePlacesInteractor>(),
       get<_i27.GetPlacesInteractor>(),
       get<_i20.DeletePlaceInteractor>(),
-      get<_i33.PlaceFoodsInteractor>(),
-      get<_i34.SearchFoodInteractor>()));
+      get<_i33.PlaceFoodsInteractor>()));
   gh.factory<_i42.AddPlaceInFoodCubit>(() => _i42.AddPlaceInFoodCubit(
       get<_i16.SearchPlaceInteractor>(), get<_i37.AddPlaceInFoodInteractor>()));
   return get;
