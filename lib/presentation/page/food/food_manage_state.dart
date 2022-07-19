@@ -1,6 +1,5 @@
 import 'package:copy_with_extension/copy_with_extension.dart';
 import 'package:de1_mobile_friends/domain/model/food.dart';
-import 'package:de1_mobile_friends/domain/model/occasion.dart';
 
 part 'food_manage_state.g.dart';
 
@@ -8,13 +7,11 @@ part 'food_manage_state.g.dart';
 class FoodManageState {
   final List<Food>? foods;
   final Map<String, List<Food>> displayedFoods;
-  final Occasion? occasion;
   final String searchKeyword;
 
   FoodManageState({
     this.displayedFoods = const {},
     this.foods,
-    this.occasion,
     this.searchKeyword = '',
   });
 }

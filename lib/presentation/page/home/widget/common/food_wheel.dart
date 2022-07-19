@@ -1,8 +1,10 @@
 import 'dart:math';
 
 import 'package:de1_mobile_friends/domain/model/food.dart';
+import 'package:de1_mobile_friends/presentation/page/food/common/add_place_in_food_dialog.dart';
 import 'package:de1_mobile_friends/presentation/page/home/bloc/home_cubit.dart';
 import 'package:de1_mobile_friends/presentation/page/home/bloc/home_state.dart';
+import 'package:de1_mobile_friends/presentation/utils/colors.dart';
 import 'package:de1_mobile_friends/presentation/utils/constants.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -42,6 +44,9 @@ class _FoodWheelState extends State<FoodWheel> {
     return BlocConsumer<HomeCubit, HomeState>(
       buildWhen: (previous, current) =>
           previous.displayedFoods != current.displayedFoods,
+      listenWhen: (previous, current) {
+        return previous.spinStatus != current.spinStatus;
+      },
       listener: (BuildContext context, HomeState state) {
         if (state.spinStatus == HomeSpinStatus.spinning) {
           onSpinning(state);
@@ -60,10 +65,13 @@ class _FoodWheelState extends State<FoodWheel> {
 
           return GestureDetector(
             onTap: () {
-              setState(() {
-                _selectedIndex = -1;
-              });
-              context.read<HomeCubit>().onSpin();
+              final homeCubit = context.read<HomeCubit>();
+              if (homeCubit.state.spinStatus != HomeSpinStatus.spinning) {
+                setState(() {
+                  _selectedIndex = -1;
+                });
+                homeCubit.onSpin();
+              }
             },
             child: SizedBox(
               height: MediaQuery.of(context).size.height / 2,
@@ -74,6 +82,8 @@ class _FoodWheelState extends State<FoodWheel> {
                   final itemIdx = index % foods.length;
                   final item = foods[itemIdx];
                   final isSelected = _selectedIndex == itemIdx;
+                  print(
+                      "ZZLL $_selectedIndex - $index - $itemIdx - ${foods.length}");
                   return Container(
                     padding: const EdgeInsets.all(16),
                     child: AnimatedSwitcher(
@@ -115,6 +125,7 @@ class _FoodWheelState extends State<FoodWheel> {
     )
         .then((value) {
       setState(() {
+        print("ZZLL DONE= ${state.pickedFoodIndex!}");
         _selectedIndex = state.pickedFoodIndex!;
       });
       context.read<HomeCubit>().onSpinEnd();
@@ -158,25 +169,66 @@ class _FoodWheelState extends State<FoodWheel> {
             ),
           ),
           const SizedBox(height: 16),
-          InkWell(
-            highlightColor: Colors.transparent,
-            hoverColor: Colors.transparent,
-            splashColor: Colors.transparent,
-            onTap: () {
-              ScaffoldMessenger.of(context).showSnackBar(
-                  const SnackBar(content: Text('Comming soon...')));
-            },
-            child: const Text(
-              'Places that sell this',
-              textAlign: TextAlign.center,
-              style: TextStyle(
-                  fontFamily: 'OpenSans',
-                  fontWeight: FontWeight.bold,
-                  color: Color(0xFF093684),
-                  fontSize: 18),
-            ),
-          )
+          Expanded(child: _placesThatSellThis(item)),
         ],
+      ),
+    );
+  }
+
+  Widget _placesThatSellThis(Food food) {
+    return ListView.separated(
+      separatorBuilder: (context, i) => const SizedBox(height: 8),
+      itemCount: food.placeList.length + 1,
+      itemBuilder: (context, i) {
+        if (i == food.placeList.length) {
+          return _addPlaceBtn(food);
+        }
+
+        final place = food.placeList[i];
+        final String directions = place.direction?.isNotEmpty == true
+            ? place.direction!
+            : '(No directions)';
+        return Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Text(
+              place.name,
+              maxLines: 2,
+              overflow: TextOverflow.ellipsis,
+            ),
+            Text(
+              directions,
+              maxLines: 2,
+              overflow: TextOverflow.ellipsis,
+              style: TextStyle(color: Colors.black.withOpacity(0.5)),
+            ),
+          ],
+        );
+      },
+    );
+  }
+
+  Widget _addPlaceBtn(Food food) {
+    return InkWell(
+      onTap: () async {
+        showAddPlaceInFoodDialog(context, food: food);
+      },
+      child: Padding(
+        padding: const EdgeInsets.all(8).copyWith(left: 0),
+        child: Row(
+          children: const [
+            Icon(
+              Icons.add_circle_outline_outlined,
+              color: colorFa6d85,
+            ),
+            SizedBox(width: 8),
+            Text(
+              'Add a place',
+              style: TextStyle(
+                  color: colorFa6d85, fontSize: 14, fontFamily: 'OpenSans'),
+            ),
+          ],
+        ),
       ),
     );
   }

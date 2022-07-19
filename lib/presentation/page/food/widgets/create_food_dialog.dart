@@ -9,6 +9,7 @@ Future<CreateFoodOutput?> showCreateFoodDialog(
   BuildContext context, {
   Food? food,
   required Map<String, String> categories,
+  required Map<String, String> occasions,
 }) {
   return showDialog<CreateFoodOutput>(
     context: context,
@@ -20,6 +21,7 @@ Future<CreateFoodOutput?> showCreateFoodDialog(
         content: CreateFoodDialog(
           food: food,
           foodCategories: categories,
+          occasions: occasions,
         ),
         shape: const RoundedRectangleBorder(
           borderRadius: BorderRadius.all(
@@ -35,20 +37,27 @@ class CreateFoodOutput {
   final String? id;
   final String foodName;
   final Map<String, bool> foodCategories;
+  final Map<String, bool> occasions;
 
   CreateFoodOutput({
     this.id,
     required this.foodName,
     required this.foodCategories,
+    required this.occasions,
   });
 }
 
 class CreateFoodDialog extends StatefulWidget {
-  const CreateFoodDialog({Key? key, this.food, required this.foodCategories})
-      : super(key: key);
+  const CreateFoodDialog({
+    Key? key,
+    this.food,
+    required this.foodCategories,
+    required this.occasions,
+  }) : super(key: key);
 
   final Food? food;
   final Map<String, String> foodCategories;
+  final Map<String, String> occasions;
 
   @override
   State<CreateFoodDialog> createState() => _CreateFoodDialogState();
@@ -61,6 +70,7 @@ class _CreateFoodDialogState extends State<CreateFoodDialog> {
   final FocusNode _focusNode = FocusNode();
 
   final Map<String, bool> _foodCategories = <String, bool>{};
+  final Map<String, bool> _foodOccasions = <String, bool>{};
 
   @override
   void initState() {
@@ -101,6 +111,16 @@ class _CreateFoodDialogState extends State<CreateFoodDialog> {
           const SizedBox(height: 48),
           _inputField(),
           const SizedBox(height: 16),
+          const Align(
+              alignment: Alignment.centerLeft,
+              child: Text('What is the occasion?')),
+          const SizedBox(height: 8),
+          _foodOccasionPicker(),
+          const SizedBox(height: 16),
+          const Align(
+              alignment: Alignment.centerLeft,
+              child: Text('What is this food type? (Optional)')),
+          const SizedBox(height: 8),
           _foodCategoryPicker(),
           const SizedBox(height: 16),
           _confirmBtn(context),
@@ -138,11 +158,21 @@ class _CreateFoodDialogState extends State<CreateFoodDialog> {
           return;
         }
 
+        if (_foodOccasions.isEmpty) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(
+              content: Text('Must choose at least 1 occasion'),
+            ),
+          );
+          return;
+        }
+
         Navigator.of(context).pop(
           CreateFoodOutput(
             foodName: _controller.text,
             id: widget.food?.id,
             foodCategories: _foodCategories,
+            occasions: _foodOccasions,
           ),
         );
       },
@@ -163,7 +193,38 @@ class _CreateFoodDialogState extends State<CreateFoodDialog> {
               categoryMapEntry: MapEntry(e, widget.foodCategories[e]!),
               isPreSelected: widget.food?.categories?.keys.contains(e) == true,
               onSelect: (String key, bool isSelected) {
-                _foodCategories[key] = isSelected;
+                if (isSelected) {
+                  _foodCategories[key] = isSelected;
+                } else {
+                  _foodCategories.remove(key);
+                }
+              },
+            );
+          }).toList(),
+        )
+      ],
+    );
+  }
+
+  Widget _foodOccasionPicker() {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.stretch,
+      children: [
+        Wrap(
+          crossAxisAlignment: WrapCrossAlignment.start,
+          runAlignment: WrapAlignment.start,
+          spacing: 8,
+          runSpacing: 8,
+          children: widget.occasions.keys.map((e) {
+            return CategoryChoiceChip(
+              categoryMapEntry: MapEntry(e, widget.occasions[e]!),
+              isPreSelected: widget.food?.occasion?.keys.contains(e) == true,
+              onSelect: (String key, bool isSelected) {
+                if (isSelected) {
+                  _foodOccasions[key] = isSelected;
+                } else {
+                  _foodOccasions.remove(key);
+                }
               },
             );
           }).toList(),
