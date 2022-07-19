@@ -106,9 +106,14 @@ class _FoodManagePageState extends State<FoodManagePage>
           final data = await showCreateFoodDialog(
             context,
             categories: _cubit!.getCategories,
+            occasions: _cubit!.getOccasions,
           );
           if (data != null) {
-            _cubit?.addFood(data.foodName, data.foodCategories);
+            _cubit?.addFood(
+              data.foodName,
+              data.foodCategories,
+              data.occasions,
+            );
           }
         },
         child: const Icon(
@@ -405,11 +410,15 @@ class _FoodItemState extends State<_FoodItem> {
               context,
               food: widget.item,
               categories: context.read<FoodManageCubit>().getCategories,
+              occasions: context.read<FoodManageCubit>().getOccasions,
             );
             if (data != null) {
-              context
-                  .read<FoodManageCubit>()
-                  .editFood(data.id, data.foodName, data.foodCategories);
+              context.read<FoodManageCubit>().editFood(
+                    data.id,
+                    data.foodName,
+                    data.foodCategories,
+                    data.occasions,
+                  );
             }
           },
           icon: Icon(

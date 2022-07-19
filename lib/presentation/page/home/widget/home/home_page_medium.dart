@@ -4,6 +4,7 @@ import 'package:de1_mobile_friends/presentation/page/home/widget/common/food_whe
 import 'package:de1_mobile_friends/presentation/utils/constants.dart';
 import 'package:de1_mobile_friends/presentation/widget/slide_up_widget.dart';
 import 'package:dropdown_button2/dropdown_button2.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
@@ -37,7 +38,7 @@ class _HomePageMediumState extends State<HomePageMedium> {
       builder: (BuildContext context, HomeState state) {
         if (state.foods?.isNotEmpty != true) {
           return const Center(
-            child: Text('Something went wrong, please reload page'),
+            child: CupertinoActivityIndicator(),
           );
         }
 

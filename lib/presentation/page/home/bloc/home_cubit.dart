@@ -3,7 +3,7 @@ import 'dart:math';
 
 import 'package:de1_mobile_friends/domain/interactor/food/observe_all_food_interactor.dart';
 import 'package:de1_mobile_friends/domain/interactor/occasion/get_occasions_interactor.dart';
-import 'package:de1_mobile_friends/domain/model/occasion.dart';
+import 'package:de1_mobile_friends/domain/model/food.dart';
 import 'package:de1_mobile_friends/presentation/page/home/bloc/home_state.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:injectable/injectable.dart';
@@ -34,7 +34,7 @@ class HomeCubit extends Cubit<HomeState> {
     final stream = await _allFoodInteractor.execute(null);
 
     _foodStreamSubscription = stream.listen((foodList) {
-      emit(state.copyWith(foods: foodList, displayedFoods: foodList));
+      emitWithOccasionFilter(state.pickedOccasionKey, foodList);
     });
   }
 
@@ -44,7 +44,7 @@ class HomeCubit extends Cubit<HomeState> {
 
   void onSpin() {
     Random random = Random();
-    int randomNumber = random.nextInt(state.foods!.length);
+    int randomNumber = random.nextInt(state.displayedFoods!.length);
     emit(state.copyWith(
       spinStatus: HomeSpinStatus.spinning,
       pickedFoodIndex: randomNumber,
@@ -55,71 +55,21 @@ class HomeCubit extends Cubit<HomeState> {
     _foodStreamSubscription?.cancel();
   }
 
-  // ignore: unused_element
-  void _emitFoodListWithFilter({Occasion? occasion}) {
-    // prepare filter that is false
-    // Map<String, bool> falseOnlyMap = {};
-    // for (var element in currentFilterMap.entries) {
-    //   if (element.value == false) {
-    //     falseOnlyMap[element.key] = false;
-    //   }
-    // }
-    // // apply filter
-    // List<Food> filteredFoodList = [];
+  void emitWithOccasionFilter(String? occasionKey, List<Food> foodList) {
+    if (state.pickedOccasionKey == null) return;
 
-    // if (falseOnlyMap.isEmpty) {
-    //   filteredFoodList = _originalFoodList;
-    // } else {
-    //   filteredFoodList = _originalFoodList.where((foodElement) {
-    //     final foodElementType = foodElement.type!.toJson();
-
-    //     var isValid = true;
-    //     for (var typeElement in foodElementType.keys) {
-    //       if (falseOnlyMap[typeElement] == false &&
-    //           foodElementType[typeElement] != false) {
-    //         isValid = false;
-    //       }
-    //     }
-
-    //     return isValid;
-    //   }).toList();
-    // }
-
-    // if (occasion != null) {
-    //   filteredFoodList = filteredFoodList.where((element) {
-    //     var isValid = true;
-
-    //     final foodOccasion = element.occasion;
-
-    //     if (foodOccasion?.isNotEmpty == true) {
-    //       occasion.occasions.forEach((key, value) {
-    //         final foodOccasionWithKey = foodOccasion![key];
-    //         if (isValid != false) {
-    //           isValid =
-    //               foodOccasionWithKey != null && foodOccasionWithKey == value;
-    //         }
-    //       });
-    //     } else {
-    //       // default will be included anyways
-    //       isValid = true;
-    //     }
-
-    //     return isValid;
-    //   }).toList();
-    // }
-
-    // emit result
-    // emit(
-    //   HomePrimaryState(
-    //     foods: filteredFoodList,
-    //     pickedFood: state.pickedFood,
-    //     occasion: occasion ?? state.occasions,
-    //   ),
-    // );
+    final displayedFoods = foodList.where((element) {
+      return element.occasion?[occasionKey] != null;
+    }).toList();
+    emit(state.copyWith(
+      foods: foodList,
+      displayedFoods: displayedFoods,
+      pickedOccasionKey: occasionKey,
+    ));
   }
 
   void onOccasionSelected(String? occasionKey) {
     if (occasionKey == state.pickedOccasionKey) return;
-    emit(state.copyWith(pickedOccasionKey: occasionKey));
+    emitWithOccasionFilter(occasionKey, state.foods ?? []);
   }
 }

@@ -7,6 +7,7 @@ import 'package:de1_mobile_friends/domain/interactor/food/observe_all_food_inter
 import 'package:de1_mobile_friends/domain/interactor/occasion/get_occasions_interactor.dart';
 import 'package:de1_mobile_friends/domain/model/either.dart';
 import 'package:de1_mobile_friends/domain/model/food.dart';
+import 'package:de1_mobile_friends/domain/model/occasion.dart';
 import 'package:de1_mobile_friends/presentation/page/food/food_manage_state.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:injectable/injectable.dart';
@@ -24,7 +25,6 @@ class FoodManageCubit extends Cubit<FoodManageState> {
   final ObserveAllFoodInteractor _allFoodInteractor;
   final AddFoodInteractor _addFoodInteractor;
   final DeleteFoodInteractor _deleteFoodInteractor;
-  // ignore: unused_field
   final GetOccasionInteractor _getOccasionInteractor;
   final GetFoodCategoriesInteractor _getFoodCategoriesInteractor;
 
@@ -33,8 +33,12 @@ class FoodManageCubit extends Cubit<FoodManageState> {
   Map<String, String> _categories = {};
   Map<String, String> get getCategories => _categories;
 
+  Map<String, String> _occasions = {};
+  Map<String, String> get getOccasions => _occasions;
+
   void initialize() async {
     _categories = await _getFoodCategoriesInteractor.execute(null);
+    _occasions = (await _getOccasionInteractor.execute(null)).occasions;
     final stream = await _allFoodInteractor.execute(null);
     _foodStreamSubscription = stream.listen((List<Food> foods) {
       final filteredFoodList = state.searchKeyword.isNotEmpty
@@ -50,19 +54,23 @@ class FoodManageCubit extends Cubit<FoodManageState> {
       emit(state.copyWith(
         foods: foods,
         displayedFoods: foodGrouppedByCategory,
-        occasion: state.occasion,
       ));
     });
   }
 
-  void addFood(String? foodName, Map<String, bool> foodCategories) async {
+  void addFood(
+    String? foodName,
+    Map<String, bool> foodCategories,
+    Map<String, bool> occasions,
+  ) async {
     if (foodName?.isNotEmpty != true) {
       return;
     }
     final input = AddFoodInput(
       name: foodName!,
-      occasion: state.occasion,
       categories: foodCategories,
+      occasion:
+          Occasion(occasions: occasions.map((key, value) => MapEntry(key, ''))),
     );
     final result = await _addFoodInteractor.execute(input);
     if (result.isSuccess()) {
@@ -77,6 +85,7 @@ class FoodManageCubit extends Cubit<FoodManageState> {
     String? id,
     String foodName,
     Map<String, bool> foodCategories,
+    Map<String, bool> occasions,
   ) async {
     if (foodName.isEmpty) {
       return;
@@ -85,7 +94,8 @@ class FoodManageCubit extends Cubit<FoodManageState> {
     final input = AddFoodInput(
       id: id,
       name: foodName,
-      occasion: state.occasion,
+      occasion:
+          Occasion(occasions: occasions.map((key, value) => MapEntry(key, ''))),
       categories: foodCategories,
     );
     final result = await _addFoodInteractor.execute(input);
@@ -119,7 +129,6 @@ class FoodManageCubit extends Cubit<FoodManageState> {
 
     emit(state.copyWith(
       displayedFoods: foodGrouppedByCategory,
-      occasion: state.occasion,
       searchKeyword: text,
     ));
   }
